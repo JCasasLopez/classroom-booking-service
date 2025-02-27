@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import dev.jcasaslopez.booking.model.WeeklyOpeningTimes;
+import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class OpeningTimesConfig {
@@ -14,6 +15,10 @@ public class OpeningTimesConfig {
 	// Formatos posibles:
 	// "9:00-22:00" (Sin espacios)
 	// "CLOSED" (En mayúsculas)
+	
+	// Possible formats:
+	// "9:00-22:00" (No spaces)
+	// "CLOSED" (In capital letters)
 
 	@Value("${opening-times.monday}") private String mondayHours; 
     @Value("${opening-times.tuesday}") private String tuesdayHours;
@@ -23,8 +28,15 @@ public class OpeningTimesConfig {
     @Value("${opening-times.saturday}") private String saturdayHours; 
     @Value("${opening-times.sunday}") private String sundayHours;
     
-    private List<String> weeklyHours = List.of(mondayHours, tuesdayHours, wednesdayHours,
-    		thursdayHours, fridayHours, saturdayHours, sundayHours);
+    private List<String> weeklyHours;
+
+    @PostConstruct
+    private void init() {
+    // Se inicializa aquí porque los valores @Value se asignan después de la inyección de dependencias
+    // It is initialized here because the @Value values are assigned after dependency injection.
+        weeklyHours = List.of(mondayHours, tuesdayHours, wednesdayHours, 
+                              thursdayHours, fridayHours, saturdayHours, sundayHours);
+    }
     
     @Bean
     WeeklyOpeningTimes weeklyOpeningTimes() {
