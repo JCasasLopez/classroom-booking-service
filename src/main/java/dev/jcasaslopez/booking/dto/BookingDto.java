@@ -9,15 +9,15 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 
-//Se utilizan tipos envoltorios (Integer, Boolean) en lugar de primitivos, ya que los tipos 
-//primitivos no pueden ser null y Jackson asignaría automáticamente valores por defecto 
-//(por ejemplo, false para booleanos) al deserializar JSON. Esto impediría detectar campos 
-//ausentes y realizar validaciones como @NotNull correctamente.
+// Se utilizan tipos envoltorios (Integer, Boolean) en lugar de primitivos, ya que los tipos 
+// primitivos no pueden ser null y Jackson asignaría automáticamente valores por defecto 
+// (por ejemplo, false para booleanos) al deserializar JSON. Esto impediría detectar campos 
+// ausentes y realizar validaciones como @NotNull correctamente.
 
-//Wrapper types (Integer, Boolean) are used instead of primitive types because primitives 
-//cannot be null, and Jackson would automatically assign default values (e.g., false for 
-//booleans) when deserializing JSON. This would prevent detecting missing fields and 
-//correctly performing validations such as @NotNull.
+// Wrapper types (Integer, Boolean) are used instead of primitive types because primitives 
+// cannot be null, and Jackson would automatically assign default values (e.g., false for 
+// booleans) when deserializing JSON. This would prevent detecting missing fields and 
+// correctly performing validations such as @NotNull.
 
 public class BookingDto {
 	
@@ -63,7 +63,6 @@ public class BookingDto {
 	        && (finish.getMinute() == 0 || finish.getMinute() == 30);
 	}
 
-	
 	public BookingDto(long idBooking, Integer idClassroom, Integer idUser, LocalDateTime start,
 			LocalDateTime finish, LocalDateTime timestamp, String comment, BookingStatus status) {
 		this.idBooking = idBooking;
@@ -71,7 +70,7 @@ public class BookingDto {
 		this.idUser = idUser;
 		this.start = start;
 		this.finish = finish;
-		this.timestamp = timestamp;
+		this.timestamp = timestamp != null ? timestamp : LocalDateTime.now();
 		this.comment = comment;
 		this.status = status != null ? status : BookingStatus.ACTIVE;
 	}
