@@ -23,17 +23,17 @@ public class Booking {
 	private LocalDateTime timestamp;
 	private String comment;
 	private BookingStatus status;
-	
+
 	public Booking(long idBooking, int idClassroom, int idUser, LocalDateTime start, LocalDateTime finish,
-			String comment) {
+			LocalDateTime timestamp, String comment, BookingStatus status) {
 		this.idBooking = idBooking;
 		this.idClassroom = idClassroom;
 		this.idUser = idUser;
 		this.start = start;
 		this.finish = finish;
-		this.timestamp = LocalDateTime.now();
+		this.timestamp = timestamp;
 		this.comment = comment;
-		this.status = BookingStatus.ACTIVE;
+		this.status = status;
 	}
 
 	public Booking() {
