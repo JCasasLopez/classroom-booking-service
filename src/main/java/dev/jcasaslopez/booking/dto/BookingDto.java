@@ -1,5 +1,6 @@
 package dev.jcasaslopez.booking.dto;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import dev.jcasaslopez.booking.enums.BookingStatus;
@@ -42,8 +43,26 @@ public class BookingDto {
 	
 	@AssertTrue(message = "Finish time must be after start time")
 	public boolean isFinishAfterStart() {
-	    return finish.isAfter(start);
+	    return start != null && finish != null && finish.isAfter(start);
 	}
+
+	@AssertTrue(message = "Booking cannot be shorter than 30 minutes or longer than 2 hours")
+	public boolean isWithinAllowedDuration() {
+	    if (start == null || finish == null) {
+	    	// Let @NotNull handle validation
+	        return true; 
+	    }
+	    Duration duration = Duration.between(start, finish);
+	    long minutes = duration.toMinutes();
+	    return minutes >= 30 && minutes <= 120;
+	}
+
+	@AssertTrue(message = "Starting and finishing times must be valid (on the hour or half past)")
+	public boolean isStartAndFinishValid() {
+	    return (start.getMinute() == 0 || start.getMinute() == 30) 
+	        && (finish.getMinute() == 0 || finish.getMinute() == 30);
+	}
+
 	
 	public BookingDto(long idBooking, Integer idClassroom, Integer idUser, LocalDateTime start,
 			LocalDateTime finish, LocalDateTime timestamp, String comment, BookingStatus status) {
@@ -54,7 +73,7 @@ public class BookingDto {
 		this.finish = finish;
 		this.timestamp = timestamp;
 		this.comment = comment;
-		this.status = status;
+		this.status = status != null ? status : BookingStatus.ACTIVE;
 	}
 
 	public BookingDto() {
