@@ -2,5 +2,6 @@ package dev.jcasaslopez.booking.enums;
 
 public enum BookingStatus {
 	ACTIVE,
-	CANCELLED
+	CANCELLED,
+	COMPLETED
 }
