@@ -6,9 +6,14 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class WeeklyOpeningTimes {
 	
 	private List<DailyOpeningTimes> weeklyOpeningTimes;
+	
+	private static final Logger logger = LoggerFactory.getLogger(WeeklyOpeningTimes.class);
 
 	public WeeklyOpeningTimes(List<String> weeklyHours) {
 		this.weeklyOpeningTimes = addDayOpeningTimes(weeklyHours);
@@ -38,16 +43,17 @@ public class WeeklyOpeningTimes {
 	public boolean isOpen(LocalDateTime givenTime) {
 		DayOfWeek dayOfWeek = givenTime.getDayOfWeek();
 		LocalTime timeToBeChecked = LocalTime.of(givenTime.getHour(), givenTime.getMinute());
+		// Siempre devuelve un valor porque "weeklyOpeningTimes" incluye los 7 días de la semana.  
+		// Always returns a value because "weeklyOpeningTimes" includes all 7 days of the week.  
 		DailyOpeningTimes dayFound = weeklyOpeningTimes.stream()
 				.filter(d -> dayOfWeek == d.getDayOfWeek())
 				.findFirst()
 				.get();
-		if(!dayFound.isOpen() 
-				|| timeToBeChecked.isBefore(dayFound.getOpeningTime())
-				|| timeToBeChecked.isAfter(dayFound.getClosingTime())) {
-			return false;
-		}
-		return true;
+		boolean isOpen = dayFound.isOpen() 
+				&& !timeToBeChecked.isBefore(dayFound.getOpeningTime()) 
+				&& !timeToBeChecked.isAfter(dayFound.getClosingTime());
+		logger.info("Checking opening status for {} at {}: {}", dayOfWeek, givenTime, isOpen ? "OPEN" : "CLOSED");
+		return isOpen;
 	}
 	
 	// Este método convierte los horarios diarios sacados de application.properties (ver arriba)
@@ -79,7 +85,7 @@ public class WeeklyOpeningTimes {
 			// instantiate the "DailyOpeningTimes" object and add it to the final list "weeklyOpeningTimes".
 			if(dailyHours.equals("CLOSED")) {
 				weeklyOpeningTimes.add(new DailyOpeningTimes(daysOfWeek[counter], false, null, null));
-
+				logger.info("{} is CLOSED", daysOfWeek[counter]);
 			} else {
 				// Si es día está abierto, hay que parsear la cadena de texto ("9:00-22:00") para 
 				// convertirla en dos objetos LocalTime, y con ellos, instanciar el objeto 
@@ -88,6 +94,12 @@ public class WeeklyOpeningTimes {
 				// If the day is open, the text string ("9:00-22:00") needs to be parsed to convert it into
 				// two LocalTime objects. Using these, we instantiate the "DailyOpeningTimes" object, 
 				// which is then added to the final list "weeklyOpeningTimes".
+				
+				// Validamos que el formato de las horas sea correcto.
+				// We validate first that the opening hours format is correct.
+				if (!dailyHours.matches("\\d{1,2}:\\d{2}-\\d{1,2}:\\d{2}")) { 
+				    throw new IllegalArgumentException("Invalid opening hours format for " + daysOfWeek[counter] + ": " + dailyHours);
+				}
 				String openingTimeAsString = dailyHours.split("-")[0]; // "9:00"
 				int openingHour = Integer.parseInt(openingTimeAsString.split(":")[0]); // 9
 				int openingMinute = Integer.parseInt(openingTimeAsString.split(":")[1]); // 00
@@ -99,6 +111,7 @@ public class WeeklyOpeningTimes {
 				LocalTime closingTime = LocalTime.of(closingHour, closingMinute);
 
 				weeklyOpeningTimes.add(new DailyOpeningTimes(daysOfWeek[counter], true, openingTime, closingTime));
+                logger.info("{}: Open from {} to {}", daysOfWeek[counter], openingTime, closingTime);
 			}   		
 		}
 		return weeklyOpeningTimes; 	

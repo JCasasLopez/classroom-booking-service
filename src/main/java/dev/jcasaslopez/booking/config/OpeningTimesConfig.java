@@ -2,6 +2,8 @@ package dev.jcasaslopez.booking.config;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,8 @@ import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class OpeningTimesConfig {
+	
+	private static final Logger logger = LoggerFactory.getLogger(OpeningTimesConfig.class);
 	
 	// Formatos posibles:
 	// "9:00-22:00" (Sin espacios)
@@ -36,6 +40,7 @@ public class OpeningTimesConfig {
     // It is initialized here because the @Value values are assigned after dependency injection.
         weeklyHours = List.of(mondayHours, tuesdayHours, wednesdayHours, 
                               thursdayHours, fridayHours, saturdayHours, sundayHours);
+        logger.info("Opening times initialized: {}", weeklyHours);
     }
     
     @Bean
