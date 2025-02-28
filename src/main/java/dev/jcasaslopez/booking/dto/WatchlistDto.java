@@ -18,7 +18,7 @@ public class WatchlistDto {
 		this.idUser = idUser;
 		this.start = start;
 		this.finish = finish;
-		this.timestamp = timestamp;
+		this.timestamp = timestamp != null ? timestamp : LocalDateTime.now();
 	}
 
 	public WatchlistDto() {

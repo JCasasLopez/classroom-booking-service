@@ -21,13 +21,14 @@ public class Watchlist {
 	private LocalDateTime finish;
 	private LocalDateTime timestamp;
 	
-	public Watchlist(long idWatchlist, int idClassroom, int idUser, LocalDateTime start, LocalDateTime finish) {
+	public Watchlist(long idWatchlist, int idClassroom, int idUser, LocalDateTime start, LocalDateTime finish,
+			LocalDateTime timestamp) {
 		this.idWatchlist = idWatchlist;
 		this.idClassroom = idClassroom;
 		this.idUser = idUser;
 		this.start = start;
 		this.finish = finish;
-		this.timestamp = LocalDateTime.now();
+		this.timestamp = timestamp;
 	}
 
 	public Watchlist() {
