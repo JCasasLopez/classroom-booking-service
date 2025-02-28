@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import dev.jcasaslopez.booking.enums.BookingStatus;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,6 +24,7 @@ public class Booking {
 	private LocalDateTime finish;
 	private LocalDateTime timestamp;
 	private String comment;
+	@Enumerated(EnumType.STRING)
 	private BookingStatus status;
 
 	public Booking(long idBooking, int idClassroom, int idUser, LocalDateTime start, LocalDateTime finish,
