@@ -20,15 +20,18 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	@Query("UPDATE Booking b SET b.status = 'COMPLETED' WHERE b.status = 'ACTIVE' AND b.finish < :now")
 	void markCompletedBookings(LocalDateTime now);
 
-	@Query(value = """
-		    SELECT * FROM bookings 
-		    WHERE idClassroom = :queryIdClassroom 
-		    AND ((:queryStart BETWEEN start AND finish)
-		    OR (:queryFinish BETWEEN start AND finish)
-		    OR (start BETWEEN :queryStart AND :queryFinish))
-		    """, nativeQuery = true)
-	List<Booking> findBookingsForClassroomByPeriod(int queryIdClassroom, LocalDateTime queryStart, 
-			LocalDateTime queryFinish);
+	@Query("""
+			SELECT b FROM Booking b
+			WHERE b.idClassroom = :queryIdClassroom
+			AND b.status <> :excludedStatus
+			AND (
+			    (:queryStart BETWEEN b.start AND b.finish)
+			    OR (:queryFinish BETWEEN b.start AND b.finish)
+			    OR (b.start BETWEEN :queryStart AND :queryFinish)
+			)
+			""")
+	List<Booking> findBookingsForClassroomByPeriod(int queryIdClassroom, LocalDateTime queryStart,
+			LocalDateTime queryFinish, BookingStatus excludedStatus);
 
 	@Query(value = """
 		    SELECT DISTINCT b.idClassroom 
