@@ -8,12 +8,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import dev.jcasaslopez.booking.entity.Booking;
+import dev.jcasaslopez.booking.enums.BookingStatus;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
 	@Modifying
-	@Query("UPDATE Booking b SET b.status = 'CANCELLED' WHERE b.idBooking = :idBooking")
-	void cancelBooking(Long idBooking);
+	@Query("UPDATE Booking b SET b.status = :status WHERE b.idBooking = :idBooking")
+	void cancelBooking(Long idBooking, BookingStatus status);
 
 	@Modifying
 	@Query("UPDATE Booking b SET b.status = 'COMPLETED' WHERE b.status = 'ACTIVE' AND b.finish < :now")
