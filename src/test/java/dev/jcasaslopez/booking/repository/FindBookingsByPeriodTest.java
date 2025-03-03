@@ -45,13 +45,6 @@ public class FindBookingsByPeriodTest {
 		// │ 4          │ 17:30-18:30   │ ACTIVE   │
 		// └────────────┴───────────────┴──────────┘
 
-		// TODAS las búsquedas incluyen una reserva CANCELADA dentro del período de búsqueda.
-		// Estas reservas no deben ser devueltas, lo que verifica que el método excluye 
-		// correctamente las reservas canceladas.
-		//
-		// ALL searches include one CANCELLED booking within the search period.
-		// These bookings should NOT be returned, ensuring that the method 
-		// correctly excludes cancelled reservations.
 		return Stream.of(
 		    // 13:00 - 22:00 → No hay edge cases, todas las reservas activas entran completamente en el período.
 		    //
