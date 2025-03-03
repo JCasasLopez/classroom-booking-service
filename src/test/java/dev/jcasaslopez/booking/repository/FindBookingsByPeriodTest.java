@@ -26,10 +26,10 @@ public class FindBookingsByPeriodTest {
 	@Autowired
 	private EntityManager entityManager;
 	
-	// Datos de prueba para findBookingsForClassroomByPeriod_BookingsWithinPeriodTest.
+	// Datos de prueba para findActiveBookingsForClassroomByPeriod_ReturnsExpectedResultsTest.
 	// (Aula, número esperado de reservas activas, inicio del período, fin del período).
 	//
-	// Test data for findBookingsForClassroomByPeriod_BookingsWithinPeriodTest.
+	// Test data for findActiveBookingsForClassroomByPeriod_ReturnsExpectedResultsTest.
 	// (Classroom, expected result, start, finish).
 	private static Stream<Arguments> queriesByPeriod() {
 		
@@ -75,12 +75,12 @@ public class FindBookingsByPeriodTest {
 		    // 13:00 - 22:00 (classroom 2) → Searching in a different classroom with NO active bookings.
 		    Arguments.of(2, 0, LocalDateTime.of(2025, 3, 2, 13, 0), LocalDateTime.of(2025, 3, 2, 22, 00))
 		);
-
+		
 	}
 
-	// Configura reservas de prueba para findBookingsForClassroomByPeriod_BookingsWithinPeriodTest.
+	// Configura reservas de prueba para findActiveBookingsForClassroomByPeriod_ReturnsExpectedResultsTest.
 	//
-	// It sets test bookings for findBookingsForClassroomByPeriod_BookingsWithinPeriodTest.
+	// It sets test bookings for findActiveBookingsForClassroomByPeriod_ReturnsExpectedResultsTest.
 	private void setupTestBookings() {
 		Booking booking1 = new Booking(0, 1, 10, LocalDateTime.of(2025, 3, 2, 14, 0),
 				LocalDateTime.of(2025, 3, 2, 15, 30), LocalDateTime.now(), "Test booking 1", BookingStatus.ACTIVE);
@@ -111,8 +111,8 @@ public class FindBookingsByPeriodTest {
 	// (2) queriesByPeriod() → Provides different search periods.
 	@ParameterizedTest
 	@MethodSource("queriesByPeriod")
-	@DisplayName("Should return no bookings as classroom has none")
-	void findBookingsForClassroomByPeriod_BookingsClassroomNoBookings(int idClassroom, 
+	@DisplayName("Should return the expected active bookings for the given classroom and period")
+	void findActiveBookingsForClassroomByPeriod_ReturnsExpectedResultsTest(int idClassroom, 
 			int totalValidBookings, LocalDateTime queryStart, LocalDateTime queryFinish) {
 		// Arrange
 		setupTestBookings();
