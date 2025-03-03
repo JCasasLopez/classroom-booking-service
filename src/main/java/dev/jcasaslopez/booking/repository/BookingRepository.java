@@ -20,6 +20,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	@Query("UPDATE Booking b SET b.status = 'COMPLETED' WHERE b.status = 'ACTIVE' AND b.finish < :now")
 	void markCompletedBookings(LocalDateTime now);
 
+	// Este método busca reservas activas en un aula durante un período específico,
+	// excluyendo un estado determinado para evitar conflictos al realizar una nueva reserva.
+	//
+	// This method retrieves active bookings for a classroom within a specified period,
+	// excluding a given status to prevent conflicts when making a new reservation.
 	@Query("""
 		    SELECT b FROM Booking b
 		    WHERE b.idClassroom = :queryIdClassroom
@@ -30,6 +35,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	List<Booking> findBookingsForClassroomByPeriod(int queryIdClassroom, LocalDateTime queryStart,
 			LocalDateTime queryFinish, BookingStatus excludedStatus);
 
+	// Devuelve una lista de aulas ocupadas en un período específico, basándose en reservas activas.
+	//
+	// Returns a list of occupied classrooms within a given period, based on active bookings.
 	@Query(value = """
 		    SELECT DISTINCT b.idClassroom 
 		    FROM bookings b
@@ -39,5 +47,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 		      OR (b.start BETWEEN :queryStart AND :queryFinish))
 		    """, nativeQuery = true)
 	List<Integer> findOccupiedClassroomsbyPeriod(LocalDateTime queryStart, LocalDateTime queryFinish);
+	
+	// Recupera todas las reservas de un usuario, sin importar su estado (activas, canceladas o completadas),
+	// ordenadas de la más reciente a la más antigua.
+	//
+	// Retrieves all bookings made by a user, including active, cancelled, and completed ones,
+	// ordered from most recent to oldest.
+	@Query("""
+		       SELECT b FROM Booking b
+		       WHERE b.idUser = :queryIdUser
+		       ORDER BY b.start DESC
+		       """)
+		List<Booking> findBookingsByUser(int queryIdUser);
 	
 }
