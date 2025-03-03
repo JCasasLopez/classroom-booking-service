@@ -16,7 +16,7 @@ import dev.jcasaslopez.booking.enums.BookingStatus;
 import jakarta.persistence.EntityManager;
 
 @DataJpaTest
-public class CancelAndMarkCompletedBookingTest {
+public class CancelAndMarkCompletedBookingsTest {
 	
 	@Autowired
 	private BookingRepository bookingRepository;
