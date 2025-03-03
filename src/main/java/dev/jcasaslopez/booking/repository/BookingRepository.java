@@ -21,15 +21,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	void markCompletedBookings(LocalDateTime now);
 
 	@Query("""
-			SELECT b FROM Booking b
-			WHERE b.idClassroom = :queryIdClassroom
-			AND b.status <> :excludedStatus
-			AND (
-			    (:queryStart BETWEEN b.start AND b.finish)
-			    OR (:queryFinish BETWEEN b.start AND b.finish)
-			    OR (b.start BETWEEN :queryStart AND :queryFinish)
-			)
-			""")
+		    SELECT b FROM Booking b
+		    WHERE b.idClassroom = :queryIdClassroom
+		    AND b.status <> :excludedStatus
+		    AND b.start >= :queryStart
+		    AND b.finish <= :queryFinish
+		    """)
 	List<Booking> findBookingsForClassroomByPeriod(int queryIdClassroom, LocalDateTime queryStart,
 			LocalDateTime queryFinish, BookingStatus excludedStatus);
 
