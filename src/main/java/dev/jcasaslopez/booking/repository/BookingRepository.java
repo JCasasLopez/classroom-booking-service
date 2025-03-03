@@ -28,12 +28,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	@Query("""
 		    SELECT b FROM Booking b
 		    WHERE b.idClassroom = :queryIdClassroom
-		    AND b.status <> :excludedStatus
+		    AND b.status = 'ACTIVE'
 		    AND b.start >= :queryStart
 		    AND b.finish <= :queryFinish
-		    """)
-	List<Booking> findBookingsForClassroomByPeriod(int queryIdClassroom, LocalDateTime queryStart,
-			LocalDateTime queryFinish, BookingStatus excludedStatus);
+		""")
+		List<Booking> findActiveBookingsForClassroomByPeriod(int queryIdClassroom, LocalDateTime queryStart,
+		        LocalDateTime queryFinish);
 
 	// Devuelve una lista de aulas ocupadas en un período específico, basándose en reservas activas.
 	//

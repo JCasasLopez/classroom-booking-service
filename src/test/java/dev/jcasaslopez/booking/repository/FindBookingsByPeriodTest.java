@@ -125,8 +125,8 @@ public class FindBookingsByPeriodTest {
 		setupTestBookings();
 
 		// Act
-		List<Booking> bookingsFound = bookingRepository.findBookingsForClassroomByPeriod(idClassroom,
-				queryStart, queryFinish, BookingStatus.CANCELLED);
+		List<Booking> bookingsFound = bookingRepository.findActiveBookingsForClassroomByPeriod(idClassroom,
+				queryStart, queryFinish);
 
 		// Assert
 		assertEquals(totalValidBookings, bookingsFound.size(), 
