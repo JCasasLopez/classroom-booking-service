@@ -31,7 +31,7 @@ public class FindBookingsByPeriodTest {
 	//
 	// Test data for findActiveBookingsForClassroomByPeriod_ReturnsExpectedResultsTest.
 	// (Classroom, expected result, start, finish).
-	private static Stream<Arguments> queriesByPeriod() {
+	private static Stream<Arguments> bookingPeriodsAndExpectedResults() {
 		
 		// Reservas configuradas en setupTestBookings():
 		//
@@ -104,16 +104,16 @@ public class FindBookingsByPeriodTest {
 	
 	// Este test usa dos métodos auxiliares:
 	// (1) setupTestBookings() → Configura las reservas de prueba.
-	// (2) queriesByPeriod() → Proporciona diferentes períodos de búsqueda.
+	// (2) bookingPeriodsAndExpectedResults() → Proporciona diferentes períodos de búsqueda.
 	//
 	// This test uses two auxiliary methods:
 	// (1) setupTestBookings() → Sets up test bookings.
-	// (2) queriesByPeriod() → Provides different search periods.
+	// (2) bookingPeriodsAndExpectedResults() → Provides different search periods.
 	@ParameterizedTest
-	@MethodSource("queriesByPeriod")
+	@MethodSource("bookingPeriodsAndExpectedResults")
 	@DisplayName("Should return the expected active bookings for the given classroom and period")
 	void findActiveBookingsForClassroomByPeriod_ReturnsExpectedResultsTest(int idClassroom, 
-			int totalValidBookings, LocalDateTime queryStart, LocalDateTime queryFinish) {
+			int expectedValidBookings, LocalDateTime queryStart, LocalDateTime queryFinish) {
 		// Arrange
 		setupTestBookings();
 
@@ -122,8 +122,8 @@ public class FindBookingsByPeriodTest {
 				queryStart, queryFinish);
 
 		// Assert
-		assertEquals(totalValidBookings, bookingsFound.size(), 
-				"Expected " + totalValidBookings + " active bookings for classroom " + idClassroom +
+		assertEquals(expectedValidBookings, bookingsFound.size(), 
+				"Expected " + expectedValidBookings + " active bookings for classroom " + idClassroom +
 				" between " + queryStart + " and " + queryFinish + ", but found " + bookingsFound.size());
 	}
 
