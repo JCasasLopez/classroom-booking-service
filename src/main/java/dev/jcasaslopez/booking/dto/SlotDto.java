@@ -18,7 +18,7 @@ import jakarta.validation.constraints.NotNull;
 //    considera como no disponible (ver constructor).
 // Implementación de Comparable: La clase implementa Comparable<SlotDto> para permitir la ordenación
 // natural de los slots en función de su hora de inicio.  
-
+//
 // The SlotDto class models a 30-minute time period for classroom bookings.  
 // A slot represents a time interval within which a classroom can be booked.  
 // Business rules:  
@@ -68,6 +68,7 @@ public class SlotDto implements Comparable<SlotDto> {
 		this.finish = finish;
 		if(start.isBefore(LocalDateTime.now())) {
 			// Si el slot ya ha comenzado, se marca como no disponible, según las reglas de negocio.
+			//
 			// If the slot has already started, it is set as not available, as per business rules.
 			this.isAvailable = false;
 		} else {
@@ -112,6 +113,7 @@ public class SlotDto implements Comparable<SlotDto> {
 	}
 	
 	// Compara los slots usando su hora de inicio para permite su ordenación cronológica.
+	//
 	// Compares slots based on their start time to enable natural ordering.
 	@Override
 	public int compareTo(SlotDto anotherSlotDto) {

@@ -19,7 +19,7 @@ public class OpeningTimesConfig {
 	// Formatos posibles:
 	// "9:00-22:00" (Sin espacios)
 	// "CLOSED" (En mayúsculas)
-	
+	//
 	// Possible formats:
 	// "9:00-22:00" (No spaces)
 	// "CLOSED" (In capital letters)
@@ -37,6 +37,7 @@ public class OpeningTimesConfig {
     @PostConstruct
     private void init() {
     // Se inicializa aquí porque los valores @Value se asignan después de la inyección de dependencias
+    //
     // It is initialized here because the @Value values are assigned after dependency injection.
         weeklyHours = List.of(mondayHours, tuesdayHours, wednesdayHours, 
                               thursdayHours, fridayHours, saturdayHours, sundayHours);

@@ -25,35 +25,41 @@ public class CancelAndMarkCompletedBookingsTest {
 	private EntityManager entityManager;
 	
 	// Método auxiiar para reducir el código repetido.
+	//
 	// Auxiliary method to reduce boilerplate code.
 	private Booking createAndSaveBooking(LocalDateTime start, LocalDateTime finish, BookingStatus status) {
 		Booking booking = new Booking(0, 100, 200, start, finish, LocalDateTime.now(), "Test booking", status);
 		Booking savedBooking = bookingRepository.save(booking);
 		// Sincronizamos los cambios en memoria con la base de datos.
+		//
 		// We synchronize the in-memory changes with the database.
 		entityManager.flush();
 		return savedBooking;
 	}
 	
 	// Método auxiiar para reducir el código repetido.
+	//
 	// Auxiliary method to reduce boilerplate code.
 	private void executeFlushAndClear(Runnable action) {
 		action.run();
 		// Sincronizamos los cambios en memoria con la base de datos.
+		//
 		// We synchronize the in-memory changes with the database.
 		entityManager.flush();
 		// Limpiamos el contexto de persistencia (memoria), asegurándonos de que cuando
 		// se recupere el objeto este será el que está en la base de datos.
+		//
 		// We clear the persistence context (memory), ensuring that when the object is
 		// retrieved it will be the one stored in the database.
 		entityManager.clear();
 	}
 	
 	// Método auxiiar para reducir el código repetido.
+	//
 	// Auxiliary method to reduce boilerplate code.
 	private void assertBookingStatus(Long bookingId, BookingStatus expectedStatus, String message) {
-		// Hay que recuperar otra vez el objeto de la base de datos para verificar el
-		// cambio.
+		// Hay que recuperar otra vez el objeto de la base de datos para verificar el cambio.
+		// 
 		// We need to retrieve the object again from the database to verify the change.
         Optional<Booking> updatedBooking = bookingRepository.findById(bookingId);
         assertTrue(updatedBooking.isPresent(), "The booking should exist");

@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
 // primitivos no pueden ser null y Jackson asignaría automáticamente valores por defecto 
 // (por ejemplo, false para booleanos) al deserializar JSON. Esto impediría detectar campos 
 // ausentes y realizar validaciones como @NotNull correctamente.
-
+//
 // Wrapper types (Integer, Boolean) are used instead of primitive types because primitives 
 // cannot be null, and Jackson would automatically assign default values (e.g., false for 
 // booleans) when deserializing JSON. This would prevent detecting missing fields and 
