@@ -17,6 +17,17 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
+// Estos tests no verifican todos los posibles escenarios. En particular, no prueban  
+// las validaciones estándar como @NotNull, @Future o @FutureOrPresent, ya que asumimos  
+// que Hibernate Validator las maneja correctamente. En su lugar, nos enfocamos en probar  
+// los escenarios generales (objeto válido/todos los datos inválidos) y las validaciones  
+// personalizadas en métodos booleanos, donde podría haber errores en la lógica de negocio.
+//
+// These tests do not cover all possible scenarios. Specifically, they do not test  
+// standard validations like @NotNull, @Future, or @FutureOrPresent, as we assume  
+// that Hibernate Validator handles them correctly. Instead, we focus on testing  
+// general scenarios (valid object/all data invalid) and custom boolean validations,  
+// where business logic errors are more likely.
 public class BookingDtoTest {
 	
 	private static Validator validator;
