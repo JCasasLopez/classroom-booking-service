@@ -59,9 +59,11 @@ public class BookingDto {
 
 	@AssertTrue(message = "Starting and finishing times must be valid (on the hour or half past)")
 	public boolean isStartAndFinishValid() {
-	    return (start.getMinute() == 0 || start.getMinute() == 30) 
+	    return start != null && finish != null 
+	        && (start.getMinute() == 0 || start.getMinute() == 30) 
 	        && (finish.getMinute() == 0 || finish.getMinute() == 30);
 	}
+
 
 	public BookingDto(long idBooking, Integer idClassroom, Integer idUser, LocalDateTime start,
 			LocalDateTime finish, LocalDateTime timestamp, String comment, BookingStatus status) {
