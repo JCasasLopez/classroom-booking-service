@@ -89,9 +89,10 @@ public class CancelAndMarkCompletedBookingsTest {
     @DisplayName("Should mark past bookings as COMPLETED")
     void markCompletedBookings_ChangesPastActiveBookingsToCompleted() {
 		// Arrange
+		LocalDateTime now = LocalDateTime.now();
         Booking savedBooking = createAndSaveBooking(
-                LocalDateTime.now().minusHours(2).withMinute(30),
-                LocalDateTime.now().minusHours(1).withMinute(30),
+        		now.minusHours(2).withMinute(30),
+        		now.minusHours(1).withMinute(30),
                 BookingStatus.ACTIVE
         );
         Long bookingId = savedBooking.getIdBooking();
@@ -107,9 +108,10 @@ public class CancelAndMarkCompletedBookingsTest {
 	@DisplayName("Should not mark future bookings as COMPLETED")
 	void markCompletedBookings_DoesNotChangeFutureBookings() {
 		// Arrange
+		LocalDateTime now = LocalDateTime.now();
 		Booking savedBooking = createAndSaveBooking(
-				LocalDateTime.now().plusHours(1).withMinute(30),
-				LocalDateTime.now().plusHours(2).withMinute(30), 
+				now.plusHours(1).withMinute(30),
+				now.plusHours(2).withMinute(30), 
                 BookingStatus.ACTIVE
         );
 		Long bookingId = savedBooking.getIdBooking();
@@ -124,9 +126,10 @@ public class CancelAndMarkCompletedBookingsTest {
 	@Test
 	@DisplayName("Should not mark ongoing bookings as COMPLETED")
 	void markCompletedBookings_DoesNotChangeOngoingBookings() {
+		LocalDateTime now = LocalDateTime.now();
 		Booking savedBooking = createAndSaveBooking(
-				LocalDateTime.now().minusHours(1).withMinute(30),
-				LocalDateTime.now().plusHours(1).withMinute(30), 
+				now.minusHours(1).withMinute(30),
+				now.plusHours(1).withMinute(30), 
                 BookingStatus.ACTIVE
         );
 		// Arrange
@@ -143,9 +146,10 @@ public class CancelAndMarkCompletedBookingsTest {
 	@DisplayName("Should not change already completed bookings")
 	void markCompletedBookings_DoesNotChangeAlreadyCompletedBookings() {
 		// Arrange
+		LocalDateTime now = LocalDateTime.now();
 		Booking savedBooking = createAndSaveBooking(
-				LocalDateTime.now().minusHours(2).withMinute(30),
-				LocalDateTime.now().minusHours(1).withMinute(30), 
+				now.minusHours(2).withMinute(30),
+				now.minusHours(1).withMinute(30), 
                 BookingStatus.COMPLETED
         );
 		Long bookingId = savedBooking.getIdBooking();
@@ -162,9 +166,10 @@ public class CancelAndMarkCompletedBookingsTest {
 	@DisplayName("Should not affect cancelled bookings")
 	void markCompletedBookings_DoesNotAffectCancelledBookings() {
 		// Arrange
+		LocalDateTime now = LocalDateTime.now();
 		Booking savedBooking = createAndSaveBooking(
-				LocalDateTime.now().plusHours(1).withMinute(30),
-				LocalDateTime.now().plusHours(2).withMinute(30), 
+				now.plusHours(1).withMinute(30),
+				now.plusHours(2).withMinute(30), 
                 BookingStatus.CANCELLED
         );
 		Long bookingId = savedBooking.getIdBooking();
