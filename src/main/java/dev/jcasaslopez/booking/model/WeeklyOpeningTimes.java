@@ -32,18 +32,17 @@ public class WeeklyOpeningTimes {
 	}
 	
 	// Determina si las aulas están abiertas en un momento dado.
-	// A diferencia de "DayOpeningTimes", que usa "LocalTime", este método acepta un "LocalDateTime"
+	// A diferencia de "DailyOpeningTimes", que usa "LocalTime", este método acepta un "LocalDateTime"
 	// porque las reservas están basadas en fechas completas, no solo en horas. 
-	// Esto evita que quien llame al método tenga que extraer manualmente el "LocalTime".
 	//
 	// It determines if the classrooms are open at a given time.
-	// Unlike "DayOpeningTimes", which uses "LocalTime", this method accepts a "LocalDateTime"
+	// Unlike "DailyOpeningTimes", which uses "LocalTime", this method accepts a "LocalDateTime"
 	// because bookings are based on full dates, not just hours.
-	// This prevents the caller from having to manually extract the "LocalTime".
 	public boolean isOpen(LocalDateTime givenTime) {
 		DayOfWeek dayOfWeek = givenTime.getDayOfWeek();
 		LocalTime timeToBeChecked = LocalTime.of(givenTime.getHour(), givenTime.getMinute());
-		// Siempre devuelve un valor porque "weeklyOpeningTimes" incluye los 7 días de la semana.  
+		// Siempre devuelve un valor porque "weeklyOpeningTimes" incluye los 7 días de la semana.
+		//
 		// Always returns a value because "weeklyOpeningTimes" includes all 7 days of the week.  
 		DailyOpeningTimes dayFound = weeklyOpeningTimes.stream()
 				.filter(d -> dayOfWeek == d.getDayOfWeek())
