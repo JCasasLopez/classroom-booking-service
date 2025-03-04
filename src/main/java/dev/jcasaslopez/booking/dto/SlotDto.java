@@ -45,7 +45,7 @@ public class SlotDto implements Comparable<SlotDto> {
 	    return start != null && finish != null && finish.isAfter(start);
 	}
 	
-	@AssertTrue(message = "Slot duration must be 30 minutes sharp")
+	@AssertTrue(message = "Slot duration must be exactly 30 minutes")
 	public boolean isSlotRightDuration() {
 	    if (start == null || finish == null) {
 	    	// Let @NotNull handle validation
@@ -58,7 +58,8 @@ public class SlotDto implements Comparable<SlotDto> {
 	
 	@AssertTrue(message = "Starting and finishing times must be valid (on the hour or half past)")
 	public boolean isStartAndFinishValid() {
-		return (start.getMinute() == 0 || start.getMinute() == 30) 
+		return start != null && finish != null 
+		        && (start.getMinute() == 0 || start.getMinute() == 30) 
 		        && (finish.getMinute() == 0 || finish.getMinute() == 30);
 	}
 	
