@@ -10,6 +10,8 @@ public class DailyOpeningTimes {
 	private LocalTime openingTime;
 	private LocalTime closingTime;
 	
+	// Day open: new DailyOpeningTimes (DayOfWeek.MONDAY, true, 9:00, 22:00)
+	// Day closed: new DailyOpeningTimes (DayOfWeek.SATURDAY, false, null, null)
 	public DailyOpeningTimes(DayOfWeek dayOfWeek, boolean isOpen, LocalTime openingTime, 
 			LocalTime closingTime) {
 		this.dayOfWeek = dayOfWeek;
