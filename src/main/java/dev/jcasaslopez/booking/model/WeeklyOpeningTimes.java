@@ -62,7 +62,7 @@ public class WeeklyOpeningTimes {
 	// This method converts the daily schedules taken from application.properties (see above)  
 	// into "DailyOpeningTimes" objects ("Monday", 9:00, 22:00) and with these,  
 	// creates the "WeeklyOpeningTimes" object that contains the weekly schedule.
-	private List<DailyOpeningTimes> addDayOpeningTimes(List<String> weeklyHours) {
+	public List<DailyOpeningTimes> addDayOpeningTimes(List<String> weeklyHours) {
 
 		// Array con todos los valores de la enumeración "DaysOfWeek".
 		//
