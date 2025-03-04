@@ -28,7 +28,7 @@ public class WatchlistDto {
 	    return start != null && finish != null && finish.isAfter(start);
 	}
 
-	@AssertTrue(message = "Booking cannot be shorter than 30 minutes or longer than 2 hours")
+	@AssertTrue(message = "Watchlist cannot be shorter than 30 minutes or longer than 2 hours")
 	public boolean isWithinAllowedDuration() {
 	    if (start == null || finish == null) {
 	    	// Let @NotNull handle validation
