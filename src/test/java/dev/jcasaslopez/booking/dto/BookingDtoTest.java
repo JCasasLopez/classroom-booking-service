@@ -2,6 +2,7 @@ package dev.jcasaslopez.booking.dto;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
@@ -145,4 +146,48 @@ public class BookingDtoTest {
 				);
 
 	}
+	
+	@Test
+	@DisplayName("BookingDto constructor should initialize fields correctly")
+	void bookingDto_Constructor_ShouldInitializeFieldsCorrectly() {
+	    // Arrange
+	    LocalDateTime now = LocalDateTime.now();
+	    LocalDateTime start = now.plusHours(1).withMinute(30);
+	    LocalDateTime finish = now.plusHours(2).withMinute(30);
+	    
+	    // Act
+	    BookingDto booking = new BookingDto(1, 10, 20, now.plusHours(1).withMinute(30)
+	    		, now.plusHours(2).withMinute(30), now, "Test comment", BookingStatus.CANCELLED);
+	    
+	    // Assert
+	    assertAll(
+	        () -> assertEquals(1, booking.getIdBooking()),
+	        () -> assertEquals(10, booking.getIdClassroom()),
+	        () -> assertEquals(20, booking.getIdUser()),
+	        () -> assertEquals(start, booking.getStart()),
+	        () -> assertEquals(finish, booking.getFinish()),
+	        () -> assertEquals(now, booking.getTimestamp()),
+	        () -> assertEquals("Test comment", booking.getComment()),
+	        () -> assertEquals(BookingStatus.CANCELLED, booking.getStatus())
+	    );
+	}
+	
+	@Test
+	@DisplayName("BookingDto should set default values for timestamp and status if null")
+	void bookingDto_Constructor_ShouldSetDefaultValuesIfNull() {
+	    // Arrange
+	    LocalDateTime start = LocalDateTime.now().plusHours(1).withMinute(30);
+	    LocalDateTime finish = LocalDateTime.now().plusHours(2).withMinute(30);
+	    
+	    // Act
+	    BookingDto booking = new BookingDto(1, 10, 20, start, finish, null, "Test comment", null);
+	    
+	    // Assert
+	    assertAll(
+	        () -> assertNotNull(booking.getTimestamp(), "Timestamp should not be null"),
+	        () -> assertEquals(BookingStatus.ACTIVE, booking.getStatus(), "Status should default to ACTIVE if null")
+	    );
+	}
+
+
 }
