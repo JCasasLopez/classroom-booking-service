@@ -2,10 +2,8 @@ package dev.jcasaslopez.booking.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,7 @@ import dev.jcasaslopez.booking.entity.Booking;
 import dev.jcasaslopez.booking.enums.BookingStatus;
 
 // Estas anotaciones permiten evitar la carga completa del contexto con @SpringBootTest.  
-// En su lugar, inicializamos solo ClassroomMapper y la configuración mínima necesaria.  
+// En su lugar, inicializamos solo BookingMapper y la configuración mínima necesaria.  
 //
 // Instead of loading the full context with @SpringBootTest, we initialize only  
 // BookingMapper and the minimal required configuration.
@@ -53,8 +51,8 @@ class BookingMapperTest {
 		        		"Start times should match"),
 		        () -> assertEquals(booking.getFinish(), mappedBookingDto.getFinish(), 
 		        		"Finish times should match"),
-		        () -> assertTrue(ChronoUnit.SECONDS.between(booking.getTimestamp(), 
-		        		mappedBookingDto.getTimestamp()) < 2, "Timestamps should be close"),
+		        () -> assertEquals(booking.getTimestamp(), mappedBookingDto.getTimestamp(), 
+		        		"Timestamps should match"),
 		        () -> assertEquals(booking.getComment(), mappedBookingDto.getComment(), 
 		        		"Comments should match"),
 		        () -> assertEquals(booking.getStatus(), mappedBookingDto.getStatus(), 
@@ -85,8 +83,8 @@ class BookingMapperTest {
 		        		"Start times should match"),
 		        () -> assertEquals(bookingDto.getFinish(), mappedBooking.getFinish(), 
 		        		"Finish times should match"),
-		        () -> assertTrue(ChronoUnit.SECONDS.between(bookingDto.getTimestamp(), 
-		        		mappedBooking.getTimestamp()) < 2, "Timestamps should be close"),
+		        () -> assertEquals(bookingDto.getTimestamp(), mappedBooking.getTimestamp(), 
+		        		"Timestamps should match"),
 		        () -> assertEquals(bookingDto.getComment(), mappedBooking.getComment(), 
 		        		"Comments should match"),
 		        () -> assertEquals(bookingDto.getStatus(), mappedBooking.getStatus(), 
