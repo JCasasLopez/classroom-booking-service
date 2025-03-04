@@ -50,7 +50,7 @@ public class WeeklyOpeningTimes {
 				.get();
 		boolean isOpen = dayFound.isOpen() 
 				&& !timeToBeChecked.isBefore(dayFound.getOpeningTime()) 
-				&& !timeToBeChecked.isAfter(dayFound.getClosingTime());
+				&& timeToBeChecked.isBefore(dayFound.getClosingTime());
 		logger.info("Checking opening status for {} at {}: {}", dayOfWeek, givenTime, isOpen ? "OPEN" : "CLOSED");
 		return isOpen;
 	}
