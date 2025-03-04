@@ -12,9 +12,9 @@ public class WatchlistDto {
 	
 	private long idWatchlist;
 	@NotNull(message = "idClassroom field is required")
-	private int idClassroom;
+	private Integer idClassroom;
 	@NotNull(message = "idUser field is required")
-	private int idUser;
+	private Integer idUser;
 	@NotNull(message = "start field is required")
     @FutureOrPresent(message = "Start time must be in the present or future")
 	private LocalDateTime start;
@@ -41,11 +41,12 @@ public class WatchlistDto {
 
 	@AssertTrue(message = "Starting and finishing times must be valid (on the hour or half past)")
 	public boolean isStartAndFinishValid() {
-	    return (start.getMinute() == 0 || start.getMinute() == 30) 
-	        && (finish.getMinute() == 0 || finish.getMinute() == 30);
+		return start != null && finish != null 
+		        && (start.getMinute() == 0 || start.getMinute() == 30) 
+		        && (finish.getMinute() == 0 || finish.getMinute() == 30);
 	}
 	
-	public WatchlistDto(long idWatchlist, int idClassroom, int idUser, LocalDateTime start, LocalDateTime finish,
+	public WatchlistDto(long idWatchlist, Integer idClassroom, Integer idUser, LocalDateTime start, LocalDateTime finish,
 			LocalDateTime timestamp) {
 		this.idWatchlist = idWatchlist;
 		this.idClassroom = idClassroom;
@@ -67,19 +68,19 @@ public class WatchlistDto {
 		this.idWatchlist = idWatchlist;
 	}
 
-	public int getIdClassroom() {
+	public Integer getIdClassroom() {
 		return idClassroom;
 	}
 
-	public void setIdClassroom(int idClassroom) {
+	public void setIdClassroom(Integer idClassroom) {
 		this.idClassroom = idClassroom;
 	}
 
-	public int getIdUser() {
+	public Integer getIdUser() {
 		return idUser;
 	}
 
-	public void setIdUser(int idUser) {
+	public void setIdUser(Integer idUser) {
 		this.idUser = idUser;
 	}
 
@@ -106,5 +107,5 @@ public class WatchlistDto {
 	public void setTimestamp(LocalDateTime timestamp) {
 		this.timestamp = timestamp;
 	}
-	
+
 }
