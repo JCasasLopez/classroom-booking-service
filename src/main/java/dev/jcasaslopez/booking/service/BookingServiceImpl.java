@@ -14,6 +14,13 @@ import dev.jcasaslopez.booking.exception.NoSuchBookingException;
 import dev.jcasaslopez.booking.mapper.BookingMapper;
 import dev.jcasaslopez.booking.repository.BookingRepository;
 
+// Esta clase no contiene lógica de negocio, solo delega llamadas a repositorios y mapeadores. 
+// Por esta razón, no se realizarán tests unitarios sobre ella. 
+// El comportamiento se validará a nivel de integración. 
+// 
+// This class does not contain business logic; it only delegates calls to repositories and mappers. 
+// For this reason, unit tests will not be written for it. 
+// The behavior will be validated through integration tests.
 @Service
 public class BookingServiceImpl implements BookingService {
 	
@@ -57,5 +64,4 @@ public class BookingServiceImpl implements BookingService {
 	    }
 	    return bookings;
 	}
-
 }
