@@ -1,5 +1,6 @@
 package dev.jcasaslopez.booking.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -45,6 +46,16 @@ public class BookingServiceImpl implements BookingService {
 		}
 		bookingRepository.cancelBooking(idBooking, bookingStatus);
         logger.info("Booking cancelled successfully with ID: {}", idBooking);
+	}
+
+	@Override
+	public List<Booking> bookingsByUser(int idUser) {
+	    logger.info("Searching for bookings of user ID: {}", idUser);
+	    List<Booking> bookings = bookingRepository.findBookingsByUser(idUser);
+	    if (bookings.isEmpty()) {
+	        logger.warn("No bookings found for user ID: {}", idUser);
+	    }
+	    return bookings;
 	}
 
 }
