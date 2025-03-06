@@ -5,7 +5,7 @@ import dev.jcasaslopez.booking.enums.BookingStatus;
 
 public interface BookingService {
 	
-	BookingDto createBooking(BookingDto bookingDto);
-	void cancelBooking (Long idBooking, BookingStatus bookingStatus);
+	BookingDto book(BookingDto bookingDto);
+	void cancel(Long idBooking, BookingStatus bookingStatus);
 	
 }
