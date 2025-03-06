@@ -120,4 +120,30 @@ public class WeeklyOpeningTimes {
 		return weeklyOpeningTimes; 	
 	}
 	
+	// Para el objeto LocalDateTime pasado como parámetro, devuelve la hora de apertura para es día.
+	//
+	// Given a LocalDateTime object, returns the opening time for that day.
+	public LocalTime getOpeningTimeForDay(LocalDateTime time) {
+		DayOfWeek dayOfWeek = time.getDayOfWeek();
+		for (DailyOpeningTimes day : weeklyOpeningTimes) {
+			if (day.getDayOfWeek().equals(dayOfWeek)) {
+				return day.getOpeningTime();
+			}
+		}
+		throw new IllegalArgumentException("Opening time not found for " + dayOfWeek);
+	}
+	
+	// Para el objeto LocalDateTime pasado como parámetro, devuelve la hora de cierre para es día.
+	//
+	// Given a LocalDateTime object, returns the closing time for that day.
+	public LocalTime getClosingTimeForDay(LocalDateTime time) {
+		DayOfWeek dayOfWeek = time.getDayOfWeek();
+		for (DailyOpeningTimes day : weeklyOpeningTimes) {
+			if (day.getDayOfWeek().equals(dayOfWeek)) {
+				return day.getClosingTime();
+			}
+		}
+		throw new IllegalArgumentException("Closing time not found for " + dayOfWeek);
+	}
+
 }
