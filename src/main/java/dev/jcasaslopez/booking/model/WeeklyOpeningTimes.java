@@ -126,10 +126,11 @@ public class WeeklyOpeningTimes {
 	public LocalTime getOpeningTimeForDay(LocalDateTime time) {
 		DayOfWeek dayOfWeek = time.getDayOfWeek();
 		for (DailyOpeningTimes day : weeklyOpeningTimes) {
-			if (day.getDayOfWeek().equals(dayOfWeek)) {
+			if (day.getDayOfWeek().equals(dayOfWeek) && day.isOpen()) {
 				return day.getOpeningTime();
 			}
 		}
+		logger.warn("Attempted to get opening time for a closed day: {}", dayOfWeek);
 		throw new IllegalArgumentException("Opening time not found for " + dayOfWeek);
 	}
 	
@@ -139,11 +140,12 @@ public class WeeklyOpeningTimes {
 	public LocalTime getClosingTimeForDay(LocalDateTime time) {
 		DayOfWeek dayOfWeek = time.getDayOfWeek();
 		for (DailyOpeningTimes day : weeklyOpeningTimes) {
-			if (day.getDayOfWeek().equals(dayOfWeek)) {
+			if (day.getDayOfWeek().equals(dayOfWeek) && day.isOpen()) {
 				return day.getClosingTime();
 			}
 		}
-		throw new IllegalArgumentException("Closing time not found for " + dayOfWeek);
+		logger.warn("Attempted to get closing time for a closed day: {}", dayOfWeek);
+		throw new IllegalArgumentException("Classrooms are CLOSED on " + dayOfWeek);
 	}
 
 }
