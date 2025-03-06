@@ -1,11 +1,12 @@
 package dev.jcasaslopez.booking.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import dev.jcasaslopez.booking.dto.BookingDto;
 import dev.jcasaslopez.booking.entity.Booking;
@@ -34,6 +35,7 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
+	@Transactional
 	public BookingDto book(BookingDto bookingDto) {
 		logger.info("Creating new booking: Booking ID= {}, User ID= {}, Start= {}, Finish= {}", bookingDto.getIdClassroom(),
 				bookingDto.getIdUser(), bookingDto.getStart(), bookingDto.getFinish());
@@ -44,15 +46,16 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
+	@Transactional
 	public void cancel(Long idBooking, BookingStatus bookingStatus) {
-		logger.info("Attempting to cancel booking with ID: {}", idBooking);
-		Optional<Booking> foundBooking = bookingRepository.findById(idBooking);
-		if(foundBooking.isEmpty()) {
-            logger.warn("Booking not found with ID: {}", idBooking);
-			throw new NoSuchBookingException("No such booking or incorrect idBooking");
-		}
-		bookingRepository.cancelBooking(idBooking, bookingStatus);
-        logger.info("Booking cancelled successfully with ID: {}", idBooking);
+	    logger.info("Attempting to cancel booking with ID: {}", idBooking);
+	    bookingRepository.findById(idBooking)
+	        .orElseThrow(() -> {
+	            logger.warn("Booking not found with ID: {}", idBooking);
+	            return new NoSuchBookingException("No such booking or incorrect idBooking");
+	        });
+	    bookingRepository.cancelBooking(idBooking, bookingStatus);
+	    logger.info("Booking cancelled successfully with ID: {}", idBooking);
 	}
 
 	@Override
@@ -64,4 +67,12 @@ public class BookingServiceImpl implements BookingService {
 	    }
 	    return bookings;
 	}
+
+	@Override
+	@Transactional
+	public void markBookingsAsCompleted(LocalDateTime now) {
+	    logger.info("Marking all past bookings as COMPLETED from now: {}", now);
+	    bookingRepository.markCompletedBookings(now); 
+	}
+
 }
