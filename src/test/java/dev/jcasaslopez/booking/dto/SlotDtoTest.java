@@ -17,6 +17,16 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
+// Nota: Soy consciente de que estos tests podrían refactorizarse para reducir la repetición de  
+// código utilizando tests parametrizados.
+// Sin embargo, debido a limitaciones de tiempo, he priorizado la funcionalidad y la claridad 
+// sobre la optimización. La implementación actual garantiza una cobertura de pruebas adecuada 
+// y mantiene una buena legibilidad y mantenimiento.
+//
+// Note: I am aware that these tests could be refactored to reduce code duplication 
+// by using parameterized tests.
+// However, due to time constraints, I have prioritized functionality and clarity over optimization.
+// The current implementation ensures adequate test coverage while remaining easy to read and maintain.
 public class SlotDtoTest {
 	
 	private static Validator validator;
