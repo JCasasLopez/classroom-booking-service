@@ -11,26 +11,26 @@ import org.slf4j.LoggerFactory;
 
 public class WeeklySchedule {
 	
-	private Map<DayOfWeek, OpeningHours> weeklyOpeningTimes;
+	private Map<DayOfWeek, OpeningHours> weeklySchedule;
 	
 	private static final Logger logger = LoggerFactory.getLogger(WeeklySchedule.class);
 
 	public WeeklySchedule(List<String> weeklyHours) {
-		this.weeklyOpeningTimes = addDailyOpeningTimes(weeklyHours);
+		this.weeklySchedule = addDailyOpeningTimes(weeklyHours);
 	}
 
 	public WeeklySchedule() {
 		super();
 	}
 
-	public Map<DayOfWeek, OpeningHours> getWeeklyOpeningTimes() {
-		return weeklyOpeningTimes;
+	public Map<DayOfWeek, OpeningHours> getWeeklySchedule() {
+		return weeklySchedule;
 	}
 
-	public void setWeeklyOpeningTimes(Map<DayOfWeek, OpeningHours> weeklyOpeningTimes) {
-		this.weeklyOpeningTimes = weeklyOpeningTimes;
+	public void setWeeklySchedule(Map<DayOfWeek, OpeningHours> weeklySchedule) {
+		this.weeklySchedule = weeklySchedule;
 	}
-	
+
 	// Este método convierte los horarios diarios obtenidos de application.properties
 	// en objetos "DailyOpeningTimes". Con estos, crea un objeto "WeeklyOpeningTimes",
 	// donde los días de la semana son las claves y los objetos "DailyOpeningTimes"
