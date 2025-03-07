@@ -16,7 +16,7 @@ public class WeeklySchedule {
 	private static final Logger logger = LoggerFactory.getLogger(WeeklySchedule.class);
 
 	public WeeklySchedule(List<String> weeklyHours) {
-		this.weeklySchedule = addDailyOpeningTimes(weeklyHours);
+		this.weeklySchedule = addOpeningHours(weeklyHours);
 	}
 
 	public WeeklySchedule() {
@@ -40,7 +40,7 @@ public class WeeklySchedule {
 	// into "DailyOpeningTimes" objects. Using these, it creates a "WeeklyOpeningTimes" object,
 	// where the days of the week are the keys and the "DailyOpeningTimes" objects
 	// are the values. Example: MONDAY → (true, 9:00, 22:00).
-	public Map<DayOfWeek, OpeningHours> addDailyOpeningTimes(List<String> weeklyHours) {
+	public Map<DayOfWeek, OpeningHours> addOpeningHours(List<String> weeklyHours) {
 		// Array con todos los valores de la enumeración "DaysOfWeek".
 		//
 		// Array that contains all the values of "DaysOfWeek" enumeration.
