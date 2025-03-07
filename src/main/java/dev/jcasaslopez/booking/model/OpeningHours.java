@@ -2,7 +2,7 @@ package dev.jcasaslopez.booking.model;
 
 import java.time.LocalTime;
 
-public class DailyOpeningTimes {
+public class OpeningHours {
 	
 	private boolean isOpen;
 	private LocalTime openingTime;
@@ -10,13 +10,13 @@ public class DailyOpeningTimes {
 	
 	// Day open: new DailyOpeningTimes (true, 9:00, 22:00)
 	// Day closed: new DailyOpeningTimes (false, null, null)
-	public DailyOpeningTimes(boolean isOpen, LocalTime openingTime, LocalTime closingTime) {
+	public OpeningHours(boolean isOpen, LocalTime openingTime, LocalTime closingTime) {
 		this.isOpen = isOpen;
 		this.openingTime = openingTime;
 		this.closingTime = closingTime;
 	}
 
-	public DailyOpeningTimes() {
+	public OpeningHours() {
 		super();
 	}
 
