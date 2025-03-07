@@ -3,6 +3,7 @@ package dev.jcasaslopez.booking.model;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.DayOfWeek;
@@ -17,7 +18,7 @@ public class WeeklyScheduleTest {
 	
 	@Test
 	@DisplayName("Should correctly parse weekly hours into DailyOpeningTimes")
-	void addDayOpeningTimes_ShouldCorrectlyParseWeeklyHours() {
+	void addOpeningHours_WhenFormatIsValid_ShouldCorrectlyParseHours() {
 		// Arrange
 		List<String> weeklyHours = List.of(
 				"9:00-22:00", // Monday
@@ -32,7 +33,7 @@ public class WeeklyScheduleTest {
 		WeeklySchedule weeklyOpeningTimes = new WeeklySchedule();
 
 		// Act
-		Map<DayOfWeek, OpeningHours> result = weeklyOpeningTimes.addDailyOpeningTimes(weeklyHours);
+		Map<DayOfWeek, OpeningHours> result = weeklyOpeningTimes.addOpeningHours(weeklyHours);
 
 		// Assert
 		assertAll(() -> assertEquals(7, result.size(), "There should be 7 days in the weekly schedule"),
@@ -57,4 +58,23 @@ public class WeeklyScheduleTest {
 				() -> assertFalse(result.get(DayOfWeek.SUNDAY).isOpen(), "Sunday should be closed"));
 	}
 	
+	@Test
+	@DisplayName("Should throw exception if opening hours format is not correct")
+	void addOpeningHours_WhenFormatIsNotValid_ShouldThrowException() {
+		// Arrange
+		List<String> weeklyHours = List.of(
+				"9:00-10:00", // Monday
+				" CLOSED", // Tuesday
+				"10-18:00", // Wednesday
+				"CLOSED", // Thursday
+				"  8:30-20:30", // Friday
+				"CLOSED", // Saturday
+				"CLOSED" // Sunday
+		);
+
+		WeeklySchedule weeklyOpeningTimes = new WeeklySchedule();
+
+		// Act & Assert
+		assertThrows(IllegalArgumentException.class, () -> weeklyOpeningTimes.addOpeningHours(weeklyHours));
+	}
 }
