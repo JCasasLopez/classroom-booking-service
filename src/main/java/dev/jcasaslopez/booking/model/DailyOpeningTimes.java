@@ -1,20 +1,16 @@
 package dev.jcasaslopez.booking.model;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 public class DailyOpeningTimes {
 	
-	private DayOfWeek dayOfWeek;
 	private boolean isOpen;
 	private LocalTime openingTime;
 	private LocalTime closingTime;
 	
-	// Day open: new DailyOpeningTimes (DayOfWeek.MONDAY, true, 9:00, 22:00)
-	// Day closed: new DailyOpeningTimes (DayOfWeek.SATURDAY, false, null, null)
-	public DailyOpeningTimes(DayOfWeek dayOfWeek, boolean isOpen, LocalTime openingTime, 
-			LocalTime closingTime) {
-		this.dayOfWeek = dayOfWeek;
+	// Day open: new DailyOpeningTimes (true, 9:00, 22:00)
+	// Day closed: new DailyOpeningTimes (false, null, null)
+	public DailyOpeningTimes(boolean isOpen, LocalTime openingTime, LocalTime closingTime) {
 		this.isOpen = isOpen;
 		this.openingTime = openingTime;
 		this.closingTime = closingTime;
@@ -22,14 +18,6 @@ public class DailyOpeningTimes {
 
 	public DailyOpeningTimes() {
 		super();
-	}
-
-	public DayOfWeek getDayOfWeek() {
-		return dayOfWeek;
-	}
-
-	public void setDayOfWeek(DayOfWeek dayOfWeek) {
-		this.dayOfWeek = dayOfWeek;
 	}
 
 	public boolean isOpen() {
@@ -56,12 +44,4 @@ public class DailyOpeningTimes {
 		this.closingTime = closingTime;
 	}
 
-	@Override
-	public String toString() {
-		if(!isOpen) {
-			return dayOfWeek + ": CLOSED" ;
-		}
-		return dayOfWeek + ": " + openingTime + "-" + closingTime;
-	}
-	
 }
