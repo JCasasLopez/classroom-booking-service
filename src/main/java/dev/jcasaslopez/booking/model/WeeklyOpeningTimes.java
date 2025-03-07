@@ -120,9 +120,10 @@ public class WeeklyOpeningTimes {
 		return weeklyOpeningTimes; 	
 	}
 	
-	// Para el objeto LocalDateTime pasado como parámetro, devuelve la hora de apertura para es día.
+	// Para el objeto LocalDateTime pasado como parámetro, devuelve la hora de apertura para es día,
+	// o null si está cerrado.
 	//
-	// Given a LocalDateTime object, returns the opening time for that day.
+	// Given a LocalDateTime object, returns the opening time for that day or null is it is closed.
 	public LocalTime getOpeningTimeForDay(LocalDateTime time) {
 		DayOfWeek dayOfWeek = time.getDayOfWeek();
 		for (DailyOpeningTimes day : weeklyOpeningTimes) {
@@ -131,12 +132,16 @@ public class WeeklyOpeningTimes {
 			}
 		}
 		logger.warn("Attempted to get opening time for a closed day: {}", dayOfWeek);
-		throw new IllegalArgumentException("Opening time not found for " + dayOfWeek);
+		// Devuelve null si ese día está cerrado.
+		//
+		// Returns null if that day is closed.
+		return null;
 	}
 	
-	// Para el objeto LocalDateTime pasado como parámetro, devuelve la hora de cierre para es día.
+	// Para el objeto LocalDateTime pasado como parámetro, devuelve la hora de cierre para es día,
+	// o null si está cerrado.
 	//
-	// Given a LocalDateTime object, returns the closing time for that day.
+	// Given a LocalDateTime object, returns the closing time for that day or null is it is closed.
 	public LocalTime getClosingTimeForDay(LocalDateTime time) {
 		DayOfWeek dayOfWeek = time.getDayOfWeek();
 		for (DailyOpeningTimes day : weeklyOpeningTimes) {
@@ -145,7 +150,10 @@ public class WeeklyOpeningTimes {
 			}
 		}
 		logger.warn("Attempted to get closing time for a closed day: {}", dayOfWeek);
-		throw new IllegalArgumentException("Classrooms are CLOSED on " + dayOfWeek);
+		// Devuelve null si ese día está cerrado.
+		//
+		// Returns null if that day is closed.
+		return null;
 	}
 
 }
