@@ -74,6 +74,66 @@ public class WeeklyOpeningTimesTest {
 
 	}
 	
+	// Proporciona los datos para testear getOpeningTimeForDay(). El segundo parámetro es el 
+	// resultado esperado
+	//
+	// It provides the data to test getOpeningTimeForDay. The second parameter represents 
+	// the expected result
+	private static Stream<Arguments> provideTestDateTimesOpening(){
+		return Stream.of(
+				// Monday 
+				Arguments.of(LocalDateTime.of(2025, 3, 3, 11, 0), LocalTime.of(9, 0)), 
+				
+				// Tuesday
+				Arguments.of(LocalDateTime.of(2025, 3, 4, 11, 0), LocalTime.of(9, 0)), 
+				
+				// Wednesday
+				Arguments.of(LocalDateTime.of(2025, 3, 5, 11, 0), LocalTime.of(9, 0)), 
+				
+				// Thursday
+				Arguments.of(LocalDateTime.of(2025, 3, 6, 11, 0), LocalTime.of(9, 0)), 
+				
+				// Friday
+				Arguments.of(LocalDateTime.of(2025, 3, 7, 11, 0), LocalTime.of(9, 0)), 
+				
+				// Saturday
+				Arguments.of(LocalDateTime.of(2025, 3, 8, 11, 0), null), 
+				
+				// Sunday
+				Arguments.of(LocalDateTime.of(2025, 3, 8, 11, 0), null)
+		);
+	}
+	
+	// Proporciona los datos para testear getOpeningTimeForDay(). El segundo parámetro es el 
+		// resultado esperado
+		//
+		// It provides the data to test getOpeningTimeForDay. The second parameter represents 
+		// the expected result
+		private static Stream<Arguments> provideTestDateTimesClosing(){
+			return Stream.of(
+					// Monday 
+					Arguments.of(LocalDateTime.of(2025, 3, 3, 11, 0), LocalTime.of(22, 0)), 
+					
+					// Tuesday
+					Arguments.of(LocalDateTime.of(2025, 3, 4, 11, 0), LocalTime.of(22, 0)), 
+					
+					// Wednesday
+					Arguments.of(LocalDateTime.of(2025, 3, 5, 11, 0), LocalTime.of(22, 0)), 
+					
+					// Thursday
+					Arguments.of(LocalDateTime.of(2025, 3, 6, 11, 0), LocalTime.of(22, 0)), 
+					
+					// Friday
+					Arguments.of(LocalDateTime.of(2025, 3, 7, 11, 0), LocalTime.of(22, 0)), 
+					
+					// Saturday
+					Arguments.of(LocalDateTime.of(2025, 3, 8, 11, 0), null), 
+					
+					// Sunday
+					Arguments.of(LocalDateTime.of(2025, 3, 8, 11, 0), null)
+			);
+		}
+	
 	@ParameterizedTest
 	@MethodSource("openTimes")
 	@DisplayName("Should return true when checking an open time")
@@ -142,6 +202,34 @@ public class WeeklyOpeningTimesTest {
 
 				() -> assertFalse(result.get(5).isOpen(), "Saturday should be closed"),
 				() -> assertFalse(result.get(6).isOpen(), "Sunday should be closed"));
+	}
+	
+	@ParameterizedTest
+	@MethodSource("provideTestDateTimesOpening")
+	@DisplayName("Should return opening time for that day or null if it closed")
+	void getOpeningTimeForDay_GivenTime_ShouldReturnExpectedResult(LocalDateTime givenTime, 
+			LocalTime expectedResult){
+		// Arrange
+		
+		// Act
+		LocalTime result = weeklyOpeningTimes.getOpeningTimeForDay(givenTime);
+		
+		// Assert
+		assertEquals(result, expectedResult);
+	}
+	
+	@ParameterizedTest
+	@MethodSource("provideTestDateTimesClosing")
+	@DisplayName("Should return closing time for that day or null if it closed")
+	void getClosingTimeForDay_GivenTime_ShouldReturnExpectedResult(LocalDateTime givenTime, 
+			LocalTime expectedResult){
+		// Arrange
+		
+		// Act
+		LocalTime result = weeklyOpeningTimes.getClosingTimeForDay(givenTime);
+		
+		// Assert
+		assertEquals(result, expectedResult);
 	}
 
 }
