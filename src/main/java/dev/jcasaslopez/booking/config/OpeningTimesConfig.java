@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import dev.jcasaslopez.booking.model.WeeklyOpeningTimes;
+import dev.jcasaslopez.booking.model.WeeklySchedule;
 import jakarta.annotation.PostConstruct;
 
 @Configuration
@@ -45,8 +45,8 @@ public class OpeningTimesConfig {
     }
     
     @Bean
-    WeeklyOpeningTimes weeklyOpeningTimes() {
-        return new WeeklyOpeningTimes(weeklyHours);
+    WeeklySchedule weeklyOpeningTimes() {
+        return new WeeklySchedule(weeklyHours);
     }
     
 }
