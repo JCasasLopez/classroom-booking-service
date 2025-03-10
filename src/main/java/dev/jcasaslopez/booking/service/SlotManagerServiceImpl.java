@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import dev.jcasaslopez.booking.dto.SlotDto;
 import dev.jcasaslopez.booking.entity.Booking;
 import dev.jcasaslopez.booking.exception.NoSuchSlotException;
-import dev.jcasaslopez.booking.model.OpeningHours;
 import dev.jcasaslopez.booking.model.WeeklySchedule;
 import dev.jcasaslopez.booking.repository.BookingRepository;
 
@@ -62,7 +60,7 @@ public class SlotManagerServiceImpl implements SlotManagerService {
 	// - All generated slots are considered available until bookings are verified.
 	public List<SlotDto> createEmptyCalendar(int idClassroom, LocalDateTime start, LocalDateTime finish) {
 		List<SlotDto> slotsList = new ArrayList<>();
-		Map<DayOfWeek, OpeningHours> weeklyScheduleMap = weeklySchedule.getWeeklySchedule();
+		WeeklySchedule weeklyScheduleMap = weeklySchedule;
 		logger.info("Starting slot generation for classroom {} from {} to {}", idClassroom, start, finish);
 
 		// Nos aseguramos de que start coincida con la hora de apertura, y si ese día está cerrado,
@@ -74,7 +72,7 @@ public class SlotManagerServiceImpl implements SlotManagerService {
 		// The process continues until the finish time is reached.
 		for (LocalDateTime slotStartTime = start; slotStartTime.isBefore(finish);) {
 			DayOfWeek dayOfWeek = slotStartTime.getDayOfWeek();
-			LocalTime closingTimeForDay = weeklyScheduleMap.get(dayOfWeek).getClosingTime();
+			LocalTime closingTimeForDay = weeklyScheduleMap.getWeeklySchedule().get(dayOfWeek).getClosingTime();
 			int counter = 0;
 			// Mientras el horario actual sea antes del cierre y no supere "finish",
 			// se crean slots de 30 minutos en cada iteración.
@@ -138,9 +136,9 @@ public class SlotManagerServiceImpl implements SlotManagerService {
 	// Helper method for createEmptyCalendar().
 	// Returns a LocalDateTime with the opening time for that day, if the classrooms are open,
 	// or the opening time for the next day where they are.
-	public LocalDateTime alignTimeToNextOpeningTime(LocalDateTime time, Map<DayOfWeek, OpeningHours> schedule) {
+	public LocalDateTime alignTimeToNextOpeningTime(LocalDateTime time, WeeklySchedule schedule) {
 		DayOfWeek dayOfWeek = time.getDayOfWeek();
-		LocalTime openingTimeForDay = schedule.get(dayOfWeek).getOpeningTime();
+		LocalTime openingTimeForDay = schedule.getWeeklySchedule().get(dayOfWeek).getOpeningTime();
 		logger.info("Time passed in to be aligned: {}", time);
 		LocalDateTime returnedTime;
 		
@@ -166,7 +164,7 @@ public class SlotManagerServiceImpl implements SlotManagerService {
 		} else {
 			do {
 				time = time.plusDays(1);
-				openingTimeForDay = schedule.get(time.getDayOfWeek()).getOpeningTime();
+				openingTimeForDay = schedule.getWeeklySchedule().get(time.getDayOfWeek()).getOpeningTime();
 			} while (openingTimeForDay == null);
 			returnedTime = time.withHour(openingTimeForDay.getHour()).withMinute(openingTimeForDay.getMinute());
 		}
@@ -179,12 +177,12 @@ public class SlotManagerServiceImpl implements SlotManagerService {
 	//
 	// Helper method for createEmptyCalendar().
 	// Returns a LocalDateTime with the opening time for the next day where classrooms are open.
-	public LocalDateTime moveToNextDayAtOpeningTime(LocalDateTime time, Map<DayOfWeek, OpeningHours> schedule) {
+	public LocalDateTime moveToNextDayAtOpeningTime(LocalDateTime time, WeeklySchedule schedule) {
 		DayOfWeek dayOfWeek = time.getDayOfWeek();
-		LocalTime openingTimeForDay = schedule.get(dayOfWeek).getOpeningTime();
+		LocalTime openingTimeForDay = schedule.getWeeklySchedule().get(dayOfWeek).getOpeningTime();
 		do {
 			time = time.plusDays(1);
-			openingTimeForDay = schedule.get(time.getDayOfWeek()).getOpeningTime();
+			openingTimeForDay = schedule.getWeeklySchedule().get(time.getDayOfWeek()).getOpeningTime();
 		} while (openingTimeForDay == null);
 		LocalDateTime returnedTime = time.withHour(openingTimeForDay.getHour()).withMinute(openingTimeForDay.getMinute());
 		logger.info("Time returned as next opening time is: {}", returnedTime);
