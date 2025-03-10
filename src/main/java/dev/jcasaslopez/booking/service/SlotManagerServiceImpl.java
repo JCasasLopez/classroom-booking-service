@@ -10,6 +10,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import dev.jcasaslopez.booking.dto.SlotDto;
 import dev.jcasaslopez.booking.entity.Booking;
@@ -18,9 +19,10 @@ import dev.jcasaslopez.booking.model.OpeningHours;
 import dev.jcasaslopez.booking.model.WeeklySchedule;
 import dev.jcasaslopez.booking.repository.BookingRepository;
 
+@Service
 public class SlotManagerServiceImpl implements SlotManagerService {
 
-	private static final Logger logger = LoggerFactory.getLogger(BookingServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(SlotManagerServiceImpl.class);
 	
 	@Autowired
 	private WeeklySchedule weeklySchedule;
@@ -59,39 +61,43 @@ public class SlotManagerServiceImpl implements SlotManagerService {
 	// - Slots always start on the hour or half-hour.
 	// - All generated slots are considered available until bookings are verified.
 	public List<SlotDto> createEmptyCalendar(int idClassroom, LocalDateTime start, LocalDateTime finish) {
-		List<SlotDto> slots = new ArrayList<>();
-		logger.info("Starting slot generation for classroom {} from {} to {}", idClassroom, start, finish);
+		List<SlotDto> slotsList = new ArrayList<>();
 		Map<DayOfWeek, OpeningHours> weeklyScheduleMap = weeklySchedule.getWeeklySchedule();
+		logger.info("Starting slot generation for classroom {} from {} to {}", idClassroom, start, finish);
 
+		// Nos aseguramos de que start coincida con la hora de apertura, y si ese día está cerrado,
+		// con la hora de apertura del siguiente día en que esté abierto.
+		start = alignTimeToNextOpeningTime(start, weeklyScheduleMap);
+		
 		// El proceso continúa hasta que la hora límite ("finish") se alcance.
 		//
 		// The process continues until the finish time is reached.
-		for (LocalDateTime slot = start; slot.isBefore(finish);) {
-			logger.debug("Processing slots for day: {}", slot.toLocalDate());
-			DayOfWeek dayOfWeek = slot.getDayOfWeek();
+		for (LocalDateTime slotStartTime = start; slotStartTime.isBefore(finish);) {
+			DayOfWeek dayOfWeek = slotStartTime.getDayOfWeek();
 			LocalTime closingTimeForDay = weeklyScheduleMap.get(dayOfWeek).getClosingTime();
-			
+			int counter = 0;
 			// Mientras el horario actual sea antes del cierre y no supere "finish",
 			// se crean slots de 30 minutos en cada iteración.
 			//
 			// While the current time is before closing time and does not exceed "finish",
 			// 30-minute slots are created in each iteration.
-			for (; slot.toLocalTime().isBefore(closingTimeForDay) && slot.isBefore(finish); 
-					slot = slot.plusMinutes(30)) {
-				slots.add(new SlotDto(idClassroom, slot, slot.plusMinutes(30)));
+			for (; slotStartTime.toLocalTime().isBefore(closingTimeForDay) && slotStartTime.isBefore(finish); 
+					slotStartTime = slotStartTime.plusMinutes(30)) {
+				slotsList.add(new SlotDto(idClassroom, slotStartTime, slotStartTime.plusMinutes(30)));
+				counter += 1;
 			}
+			logger.debug("Slots created for day: {}: {}", slotStartTime.toLocalDate(), counter);
 			
 			// Cuando se agotan los slots del día actual, saltamos al siguiente día a la hora de apertura.
 			//
 			// Once all available slots for the current day are generated, it jumps to the next open day
 			// at opening time.
-			slot = jumpToNextDayAtOpeningTime(slot);
-			logger.debug("Jumping to next available day: {}", slot);
+			slotStartTime = moveToNextDayAtOpeningTime(slotStartTime, weeklyScheduleMap);
 		}
-		logger.info("Finished slot generation. Total slots created: {}", slots.size());
-		return slots;
+		logger.info("Finished slot generation. Total slots created: {}", slotsList.size());
+		return slotsList;
 	}
-
+	
 	// Actualiza la disponibilidad de una lista de slots en base a las reservas activas.
 	//
 	// Updates the availability of a list of slots based on active bookings.
@@ -125,44 +131,63 @@ public class SlotManagerServiceImpl implements SlotManagerService {
 		return emptyCalendar;
 	}
 	
-	// Método auxiliar de createEmptyCalendar().
-	// Devuelve un LocalDateTime con el día siguiente a la hora de apertura.
-	// Si el parámetro representa el viernes 7 de marzo a las 21:30 y el lunes abre a las 9:00,
-	// el resultado será el lunes 10 de marzo a las 9:00.
+	// Método auxiliar de createEmptyCalendar(). 
+	// Devuelve un LocalDateTime con la hora de apertura para ese día, si las aulas están abiertas, o
+	// con la hora de apertura para el próximo día en que lo estén.
 	//
-	// Auxiliary method for createEmptyCalendar().
-	// Returns a LocalDateTime for the next day at opening time.
-	// If the input represents Friday, March 7 at 21:30 and Monday opens at 9:00,
-	// the result will be Monday, March 10 at 9:00.
-	public LocalDateTime jumpToNextDayAtOpeningTime(LocalDateTime time) {
-		logger.info("Time passed in: {}", time);
-		Map<DayOfWeek, OpeningHours> weeklyScheduleMap = weeklySchedule.getWeeklySchedule();
-		OpeningHours openingHours;
+	// Helper method for createEmptyCalendar().
+	// Returns a LocalDateTime with the opening time for that day, if the classrooms are open,
+	// or the opening time for the next day where they are.
+	public LocalDateTime alignTimeToNextOpeningTime(LocalDateTime time, Map<DayOfWeek, OpeningHours> schedule) {
+		DayOfWeek dayOfWeek = time.getDayOfWeek();
+		LocalTime openingTimeForDay = schedule.get(dayOfWeek).getOpeningTime();
+		logger.info("Time passed in to be aligned: {}", time);
+		LocalDateTime returnedTime;
+		
+		// Si ese día está abierto y la hora pasada como parámetro coincide con la de apertura, 
+		// se devuelve la hora pasada como parámetro sin modificar.
+		//
+		// If that day is open and the time passed as a parameter matches the opening time,
+		// the time passed as a parameter is returned  unmodified.
+		if (openingTimeForDay != null && time.toLocalTime().equals(openingTimeForDay)) {
+			returnedTime = time;
+			
+		// Si ese día está abierto pero la hora pasada como parámetro NO coincide con la de apertura, 
+		// se devuelve la hora pasada como parámetro ajustada para que coincida con la de apertura.
+		//
+		// If that day is open but the time passed as a parameter does NOT match the opening time, 
+		// the same day is returned with the time set to the opening time.
+		} else if (openingTimeForDay != null){
+			returnedTime = time.withHour(openingTimeForDay.getHour()).withMinute(openingTimeForDay.getMinute());
+		
+		// Si ese día está cerrado, se devuelve la siguiente hora y día en que esté abierto.
+		//
+		// If that day is closed, the next open day at its opening time is returned.
+		} else {
+			do {
+				time = time.plusDays(1);
+				openingTimeForDay = schedule.get(time.getDayOfWeek()).getOpeningTime();
+			} while (openingTimeForDay == null);
+			returnedTime = time.withHour(openingTimeForDay.getHour()).withMinute(openingTimeForDay.getMinute());
+		}
+		logger.info("Time returned as aligned opening time is: {}", returnedTime);
+		return returnedTime;
+	}
+	
+	// Método auxiliar de createEmptyCalendar().
+	// Devuelve un LocalDateTime con la hora de apertura para el próximo día en que las aulas estén abiertas.
+	//
+	// Helper method for createEmptyCalendar().
+	// Returns a LocalDateTime with the opening time for the next day where classrooms are open.
+	public LocalDateTime moveToNextDayAtOpeningTime(LocalDateTime time, Map<DayOfWeek, OpeningHours> schedule) {
+		DayOfWeek dayOfWeek = time.getDayOfWeek();
+		LocalTime openingTimeForDay = schedule.get(dayOfWeek).getOpeningTime();
 		do {
 			time = time.plusDays(1);
-			openingHours = weeklyScheduleMap.get(time.getDayOfWeek());
-
-			// Si el día evaluado está cerrado (openingTime == null), continúa el bucle hasta
-			// encontrar un día abierto.
-			//
-			// If the evaluated day is closed (openingTime == null), the loop continues until
-			// an open day is found.
-			if (openingHours.getOpeningTime() == null) {
-				logger.debug("Classrooms closed on: {}", time.getDayOfWeek());
-			}
-		} while (openingHours.getOpeningTime() == null);
-
-		// Construye un LocalDateTime combinando:
-		// - La fecha del primer día encontrado en el que las aulas estén abiertas.
-		// - La hora de apertura de ese día, obtenida del horario semanal.
-		//
-		// Builds a LocalDateTime by combining:
-		// - The date of the first open day found.
-		// - The opening time for that day, retrieved from the weekly schedule.
-		LocalTime openingTime = openingHours.getOpeningTime();
-		LocalDateTime nextDayAtOpeningTime = time.withHour(openingTime.getHour()).withMinute(openingTime.getMinute());
-		logger.info("Time returned: {}", nextDayAtOpeningTime);
-		return nextDayAtOpeningTime;
+			openingTimeForDay = schedule.get(time.getDayOfWeek()).getOpeningTime();
+		} while (openingTimeForDay == null);
+		LocalDateTime returnedTime = time.withHour(openingTimeForDay.getHour()).withMinute(openingTimeForDay.getMinute());
+		logger.info("Time returned as next opening time is: {}", returnedTime);
+		return returnedTime;
 	}
-
 }
