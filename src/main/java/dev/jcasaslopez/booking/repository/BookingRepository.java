@@ -20,9 +20,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	@Query("UPDATE Booking b SET b.status = 'COMPLETED' WHERE b.status = 'ACTIVE' AND b.finish < :now")
 	void markCompletedBookings(LocalDateTime now);
 
-	// Este método busca reservas activas en un aula durante un período específico.
+	// Este método busca reservas activas en un aula durante un período específico, 
+	// incluyendo aquellas que se solapan parcial o completamente con el intervalo dado.
 	//
-	// This method retrieves active bookings for a classroom within a specified period.
+	// This method retrieves active bookings for a classroom within a specified period, 
+	// including those that partially or fully overlap with the given time frame.
 	@Query("""
 		    SELECT b FROM Booking b
 		    WHERE b.idClassroom = :queryIdClassroom
