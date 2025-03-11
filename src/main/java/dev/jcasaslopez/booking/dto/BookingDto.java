@@ -63,7 +63,12 @@ public class BookingDto {
 	        && (start.getMinute() == 0 || start.getMinute() == 30) 
 	        && (finish.getMinute() == 0 || finish.getMinute() == 30);
 	}
-
+	
+	@AssertTrue(message = "Starting and finishing times must be in the same day")
+	public boolean startAndFinishInSameDay() {
+	    return start != null && finish != null &&
+	           start.toLocalDate().equals(finish.toLocalDate());
+	}
 
 	public BookingDto(long idBooking, Integer idClassroom, Integer idUser, LocalDateTime start,
 			LocalDateTime finish, LocalDateTime timestamp, String comment, BookingStatus status) {
