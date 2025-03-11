@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import dev.jcasaslopez.booking.dto.SlotDto;
 import dev.jcasaslopez.booking.entity.Booking;
 import dev.jcasaslopez.booking.exception.NoSuchSlotException;
+import dev.jcasaslopez.booking.model.OpeningHours;
 import dev.jcasaslopez.booking.model.WeeklySchedule;
 import dev.jcasaslopez.booking.repository.BookingRepository;
 
@@ -188,4 +189,39 @@ public class SlotManagerImpl implements SlotManager {
 		logger.info("Time returned as next opening time is: {}", returnedTime);
 		return returnedTime;
 	}
+
+	@Override
+	public boolean classroomsOpenDuringPeriod(LocalDateTime start, LocalDateTime finish) {
+		DayOfWeek dayOfWeek = start.getDayOfWeek();
+		OpeningHours openingHours = weeklySchedule.getWeeklySchedule().get(dayOfWeek);
+		LocalTime startTime = start.toLocalTime();
+		LocalTime finishTime = finish.toLocalTime();
+		// Ese día está cerrado.
+		//
+		// That day is closed.
+		if (startTime == null || finishTime == null) {
+			return false;
+		// Si ese día está abierto, verificamos que la reserva esté dentro del horario de apertura.
+		//
+		// If that day is open, we check that the booking falls within the opening hours.
+		} else {
+			return !startTime.isBefore(openingHours.getOpeningTime()) &&
+					startTime.isBefore(openingHours.getClosingTime()) &&
+					finishTime.isAfter(openingHours.getOpeningTime()) &&
+					!finishTime.isAfter(openingHours.getClosingTime());
+		}
+	}
+
+	@Override
+	public boolean classroomAvailableDuringPeriod(int idClassroom, LocalDateTime start, LocalDateTime finish) {
+		List<Booking> listBookings = bookingRepository.findActiveBookingsForClassroomByPeriod
+															(idClassroom, start, finish);
+		// Si la lista está vacía es que no hay ninguna reserva que se solape con 
+		// esos horarios especificados, luego el aula está disponible.
+		// 
+		// If the list is empty, it means that no bookings overlap the period of time passed in, 
+		// hence the classroom is available.
+		return listBookings.isEmpty();
+	}
+	
 }
