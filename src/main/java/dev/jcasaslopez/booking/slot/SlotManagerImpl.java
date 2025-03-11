@@ -194,22 +194,22 @@ public class SlotManagerImpl implements SlotManager {
 	public boolean classroomsOpenDuringPeriod(LocalDateTime start, LocalDateTime finish) {
 		DayOfWeek dayOfWeek = start.getDayOfWeek();
 		OpeningHours openingHours = weeklySchedule.getWeeklySchedule().get(dayOfWeek);
-		LocalTime startTime = start.toLocalTime();
-		LocalTime finishTime = finish.toLocalTime();
 		// Ese día está cerrado.
 		//
 		// That day is closed.
-		if (startTime == null || finishTime == null) {
+		if (openingHours.getOpeningTime() == null || openingHours.getClosingTime() == null) {
 			return false;
+		}
+		
+		LocalTime startTime = start.toLocalTime();
+		LocalTime finishTime = finish.toLocalTime();
 		// Si ese día está abierto, verificamos que la reserva esté dentro del horario de apertura.
 		//
 		// If that day is open, we check that the booking falls within the opening hours.
-		} else {
-			return !startTime.isBefore(openingHours.getOpeningTime()) &&
+		return !startTime.isBefore(openingHours.getOpeningTime()) &&
 					startTime.isBefore(openingHours.getClosingTime()) &&
 					finishTime.isAfter(openingHours.getOpeningTime()) &&
-					!finishTime.isAfter(openingHours.getClosingTime());
-		}
+					!finishTime.isAfter(openingHours.getClosingTime());	
 	}
 
 	@Override
