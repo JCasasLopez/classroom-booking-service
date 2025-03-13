@@ -26,7 +26,7 @@ public interface SearchService {
 	// │ 11:00     │ Available │ Available  │   Booked  │
 	// └───────────┴───────────┴────────────┴───────────┴
 
-	List<SlotDto> availabilityCalendarByClassroom(LocalDateTime start, LocalDateTime finish);
+	List<SlotDto> availabilityCalendarByClassroom(int idClassroom, LocalDateTime start, LocalDateTime finish);
 	List<ClassroomDto> classroomsAvailableByPeriod(LocalDateTime start, LocalDateTime finish);
 	List<ClassroomDto> classroomsAvailableByPeriodAndFeatures(LocalDateTime start, LocalDateTime finish,
 			int seats, boolean projector, boolean speakers);
