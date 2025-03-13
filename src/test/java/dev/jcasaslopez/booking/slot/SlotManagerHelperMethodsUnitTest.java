@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -27,7 +26,7 @@ import dev.jcasaslopez.booking.entity.Booking;
 import dev.jcasaslopez.booking.model.WeeklySchedule;
 
 @SpringBootTest
-public class SlotManagerUnitTest {
+public class SlotManagerHelperMethodsUnitTest {
 	
 	@Autowired
 	private SlotManagerImpl slotManagerImpl;
@@ -46,7 +45,7 @@ public class SlotManagerUnitTest {
             ));
         }
     }
-	
+
 	private static Stream<Arguments> alignTimeToNextOpeningTimeData(){
 		return Stream.of(
 				// Monday 6:00 -> Tuesday 7:00
@@ -64,6 +63,19 @@ public class SlotManagerUnitTest {
 				// Friday 4:34 -> Friday 15:30
 				Arguments.of(LocalDateTime.of(2025, 3, 7, 4, 34), 
 						LocalDateTime.of(2025, 3, 7, 15, 30)));
+	}
+	
+	@ParameterizedTest
+	@MethodSource("alignTimeToNextOpeningTimeData")
+	@DisplayName("alignTimeToNextOpeningTime() returns the expected result")
+	void alignTimeToNextOpeningTime_ShouldReturnExpectedResult(LocalDateTime time, LocalDateTime expectedResult) {
+		// Arrange
+		
+		// Act
+		LocalDateTime actualResult = slotManagerImpl.alignTimeToNextOpeningTime(time, weeklySchedule);
+		
+		// Assert
+		assertEquals(expectedResult, actualResult, "The aligned opening time is different from the expected one");
 	}
 	
 	private static Stream<Arguments> moveToNextDayAtOpeningTimeData(){
@@ -84,41 +96,6 @@ public class SlotManagerUnitTest {
 				Arguments.of(LocalDateTime.of(2025, 3, 8, 11, 30), 
 						LocalDateTime.of(2025, 3, 11, 7, 0))
 				);
-	}
-	
-	@Test
-	@DisplayName("createEmptyCalendar() returns the expected list of SlotDtos")
-	void createEmptyCalendar_ShouldReturnExpectedSlotDtoList() {
-		// Arrange
-		int idClassroom = 1;
-		LocalDateTime start = LocalDateTime.of(2025, 3, 3, 6, 0);
-		LocalDateTime finish = LocalDateTime.of(2025, 3, 9, 22, 0);
-		int expectedNumberSlots = 41;
-		
-		// Act
-		List<SlotDto> weekSlots = slotManagerImpl.createEmptyCalendar(idClassroom, start, finish);
-		Collections.sort(weekSlots);
-
-		// Assert
-		assertAll(
-			    () -> assertEquals(LocalDateTime.of(2025, 3, 4, 7, 0), weekSlots.get(0).getStart()),
-			    () -> assertEquals(LocalDateTime.of(2025, 3, 8, 13, 0), weekSlots.get(weekSlots.size() - 1).getStart()),
-			    () -> assertEquals(expectedNumberSlots, weekSlots.size(),
-			        "The list should contain " + expectedNumberSlots + " slots for that week, but contains " + weekSlots.size())
-			);
-	}
-	
-	@ParameterizedTest
-	@MethodSource("alignTimeToNextOpeningTimeData")
-	@DisplayName("alignTimeToNextOpeningTime() returns the expected result")
-	void alignTimeToNextOpeningTime_ShouldReturnExpectedResult(LocalDateTime time, LocalDateTime expectedResult) {
-		// Arrange
-		
-		// Act
-		LocalDateTime actualResult = slotManagerImpl.alignTimeToNextOpeningTime(time, weeklySchedule);
-		
-		// Assert
-		assertEquals(expectedResult, actualResult, "The aligned opening time is different from the expected one");
 	}
 	
 	@ParameterizedTest
