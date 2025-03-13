@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,6 +88,10 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	@Transactional
+	// Las reservas ya pasadas se marcan como COMPLETED cada 6 horas automáticamente.
+	// 
+	// Past bookings are set to COMPLETED automatically every 6 hours.
+	@Scheduled(fixedRate = 21_600_00)
 	public void markBookingsAsCompleted(LocalDateTime now) {
 	    logger.info("Marking all past bookings as COMPLETED from now: {}", now);
 	    bookingRepository.markCompletedBookings(now); 
