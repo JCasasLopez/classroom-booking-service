@@ -191,9 +191,13 @@ public class SlotManagerImpl implements SlotManager {
 	}
 
 	@Override
-	public boolean classroomsOpenDuringPeriod(LocalDateTime start, LocalDateTime finish) {
+	public boolean classroomAvailableDuringPeriod(int idClassroom, LocalDateTime start, LocalDateTime finish) {
+		// Primero verificamos que las aulas estén abiertas durante ese período
+		// 
+		// First of all, we have check classrooms are open during the time frame.
 		DayOfWeek dayOfWeek = start.getDayOfWeek();
 		OpeningHours openingHours = weeklySchedule.getWeeklySchedule().get(dayOfWeek);
+		
 		// Ese día está cerrado.
 		//
 		// That day is closed.
@@ -203,25 +207,22 @@ public class SlotManagerImpl implements SlotManager {
 		
 		LocalTime startTime = start.toLocalTime();
 		LocalTime finishTime = finish.toLocalTime();
-		// Si ese día está abierto, verificamos que la reserva esté dentro del horario de apertura.
+		
+		// Si ese día está abierto, verificamos que el período esté dentro del horario de apertura.
 		//
-		// If that day is open, we check that the booking falls within the opening hours.
-		return !startTime.isBefore(openingHours.getOpeningTime()) &&
-					startTime.isBefore(openingHours.getClosingTime()) &&
-					finishTime.isAfter(openingHours.getOpeningTime()) &&
-					!finishTime.isAfter(openingHours.getClosingTime());	
+		// If that day is open, we check that the time period passed in falls within the opening hours.
+		if (!startTime.isBefore(openingHours.getOpeningTime()) && startTime.isBefore(openingHours.getClosingTime())
+				&& finishTime.isAfter(openingHours.getOpeningTime())
+				&& !finishTime.isAfter(openingHours.getClosingTime())) {
+			List<Booking> listBookings = bookingRepository.findActiveBookingsForClassroomByPeriod
+					(idClassroom, start, finish);
+			// Si la lista está vacía es que no hay ninguna reserva que se solape con 
+			// esos horarios especificados, luego el aula está disponible.
+			// 
+			// If the list is empty, it means that no bookings overlap the period of time passed in, 
+			// hence the classroom is available.
+			return listBookings.isEmpty();
+		}
+		return false;
 	}
-
-	@Override
-	public boolean classroomAvailableDuringPeriod(int idClassroom, LocalDateTime start, LocalDateTime finish) {
-		List<Booking> listBookings = bookingRepository.findActiveBookingsForClassroomByPeriod
-															(idClassroom, start, finish);
-		// Si la lista está vacía es que no hay ninguna reserva que se solape con 
-		// esos horarios especificados, luego el aula está disponible.
-		// 
-		// If the list is empty, it means that no bookings overlap the period of time passed in, 
-		// hence the classroom is available.
-		return listBookings.isEmpty();
-	}
-	
 }
