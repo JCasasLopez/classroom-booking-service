@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import dev.jcasaslopez.booking.dto.BookingDto;
 import dev.jcasaslopez.booking.entity.Booking;
 import dev.jcasaslopez.booking.enums.BookingStatus;
+import dev.jcasaslopez.booking.exception.ClassroomNotAvailableException;
 import dev.jcasaslopez.booking.exception.NoSuchBookingException;
 import dev.jcasaslopez.booking.mapper.BookingMapper;
 import dev.jcasaslopez.booking.repository.BookingRepository;
+import dev.jcasaslopez.booking.slot.SlotManager;
 
 // Esta clase no contiene lógica de negocio, solo delega llamadas a repositorios y mapeadores. 
 // Por esta razón, no se realizarán tests unitarios sobre ella. 
@@ -28,21 +30,36 @@ public class BookingServiceImpl implements BookingService {
 	private static final Logger logger = LoggerFactory.getLogger(BookingServiceImpl.class);
 	private BookingRepository bookingRepository;
 	private BookingMapper bookingMapper; 
+	private SlotManager slotManager;
 	
-	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper) {
+	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
+			SlotManager slotManager) {
 		this.bookingRepository = bookingRepository;
 		this.bookingMapper = bookingMapper;
+		this.slotManager = slotManager;
 	}
 
 	@Override
 	@Transactional
 	public BookingDto book(BookingDto bookingDto) {
-		logger.info("Creating new booking: Booking ID= {}, User ID= {}, Start= {}, Finish= {}", bookingDto.getIdClassroom(),
-				bookingDto.getIdUser(), bookingDto.getStart(), bookingDto.getFinish());
-		Booking returnedBooking = bookingRepository.save(bookingMapper.bookingDtoToBooking(bookingDto));
-		logger.info("Booking created: Booking ID= {}, User ID= {}, Start= {}, Finish= {}", returnedBooking.getIdClassroom(),
-				returnedBooking.getIdUser(), returnedBooking.getStart(), returnedBooking.getFinish());
-		return bookingMapper.bookingToBookingDto(returnedBooking);
+		int idClassroom = bookingDto.getIdClassroom();
+		LocalDateTime start = bookingDto.getStart();
+		LocalDateTime finish = bookingDto.getFinish();
+		
+		logger.info("Checking classroom availability: Classroom ID= {}, Start= {}, Finish= {}", 
+				idClassroom, start, finish);
+		boolean isAvailable = slotManager.classroomAvailableDuringPeriod(idClassroom, start, finish);
+		
+		if(isAvailable) {
+			logger.info("Creating new booking: Classroom ID= {}, User ID= {}, Start= {}, Finish= {}", 
+					idClassroom, bookingDto.getIdUser(), start, finish);
+			Booking returnedBooking = bookingRepository.save(bookingMapper.bookingDtoToBooking(bookingDto));
+			logger.info("Booking created: Classroom ID= {}, User ID= {}, Start= {}, Finish= {}", returnedBooking.getIdClassroom(),
+					returnedBooking.getIdUser(), returnedBooking.getStart(), returnedBooking.getFinish());
+			return bookingMapper.bookingToBookingDto(returnedBooking);
+		}
+		throw new ClassroomNotAvailableException("Classroom " + idClassroom + 
+				" is not available between " + start + " and " + finish);
 	}
 
 	@Override
