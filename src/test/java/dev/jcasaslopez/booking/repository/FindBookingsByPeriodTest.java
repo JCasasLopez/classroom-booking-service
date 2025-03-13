@@ -51,22 +51,20 @@ public class FindBookingsByPeriodTest {
 			// 13:00 - 22:00 → No edge cases, all active bookings fully fit within the period.
 		    Arguments.of(1, 2, LocalDateTime.of(2025, 3, 2, 13, 0), LocalDateTime.of(2025, 3, 2, 22, 00)),
 
-		    // 14:30 - 20:00 → Edge case: El inicio y el final de la búsqueda se solapa con dos reservas.
+		    // 14:30 - 17:30 → Edge case: El inicio y el final de la búsqueda se solapa con dos reservas.
 		    //
-		    // 14:30 - 20:00 → Edge case: The search period partially overlaps with two active bookings.
-		    Arguments.of(1, 2, LocalDateTime.of(2025, 3, 2, 14, 30), LocalDateTime.of(2025, 3, 2, 20, 0)),
+		    // 14:30 - 17:30 → Edge case: The search period partially overlaps with two active bookings.
+		    Arguments.of(1, 2, LocalDateTime.of(2025, 3, 2, 14, 30), LocalDateTime.of(2025, 3, 2, 17, 30)),
 
 		    // 14:30 - 15:00 → Edge case: El período de búsqueda cae en medio de una reserva.
 		    //
 		    // 14:30 - 15:00 → Edge case: The search period falls entirely within an active booking.
 		    Arguments.of(1, 1, LocalDateTime.of(2025, 3, 2, 14, 30), LocalDateTime.of(2025, 3, 2, 15, 00)),
-
-		    // 16:00 - 17:00 → Se busca en un período vacío entre dos reservas activas sin tocarlas.
-		    // No debería devolver ninguna reserva.
+		    
+		    // 15:30 - 17:00 → Edge case: El período de búsqueda cae en el límite entre dos reservas.
 		    //
-		    // 16:00 - 17:00 → Searching in an empty period between two active bookings without touching them.
-		    // Should return no bookings.
-		    Arguments.of(1, 0, LocalDateTime.of(2025, 3, 2, 16, 0), LocalDateTime.of(2025, 3, 2, 17, 00)),
+		    // 15:30 - 17:00 → Edge case: The search period falls exactly between two bookings.
+		    Arguments.of(1, 0, LocalDateTime.of(2025, 3, 2, 15, 30), LocalDateTime.of(2025, 3, 2, 17, 00)),
 
 		    // 13:00 - 22:00 (aula 2) → Se busca en otra aula donde NO hay reservas activas.
 		    //
