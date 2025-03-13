@@ -42,9 +42,11 @@ public class SlotManagerImpl implements SlotManager {
 	// - updateSlotsAvailability(): updates the "blank" slots list based on the bookings.
 	@Override
 	public List<SlotDto> createCalendar(int idClassroom, LocalDateTime start, LocalDateTime finish) {
+        logger.info("Creating calendar for classroom {} from {} to {}", idClassroom, start, finish);
 		List<Booking> bookingsByClassroomAndPeriod = bookingRepository.findActiveBookingsForClassroomByPeriod
 				(idClassroom, start, finish);
 		List<SlotDto> emptyCalendarByClassroom = createEmptyCalendar(idClassroom, start, finish);
+		logger.debug("Found {} bookings for classroom {}", bookingsByClassroomAndPeriod.size(), idClassroom);
 		return updateSlotsAvailability(emptyCalendarByClassroom, bookingsByClassroomAndPeriod);
 	}
 
@@ -101,7 +103,8 @@ public class SlotManagerImpl implements SlotManager {
 	//
 	// Updates the availability of a list of slots based on active bookings.
 	public List<SlotDto> updateSlotsAvailability(List<SlotDto> emptyCalendar, List<Booking> bookings) {
-		
+        logger.info("Updating slot availability based on {} bookings", bookings.size());
+
 		// Recorre cada reserva de principio a fin en bloques de 30 minutos.
 		//
 		// It goes from beginning to end of each booking in 30-minute blocks.
@@ -138,9 +141,9 @@ public class SlotManagerImpl implements SlotManager {
 	// Returns a LocalDateTime with the opening time for that day, if the classrooms are open,
 	// or the opening time for the next day where they are.
 	public LocalDateTime alignTimeToNextOpeningTime(LocalDateTime time, WeeklySchedule schedule) {
+		logger.info("Aligning time {} to next opening time", time);
 		DayOfWeek dayOfWeek = time.getDayOfWeek();
 		LocalTime openingTimeForDay = schedule.getWeeklySchedule().get(dayOfWeek).getOpeningTime();
-		logger.info("Time passed in to be aligned: {}", time);
 		LocalDateTime returnedTime;
 		
 		// Si ese día está abierto y la hora pasada como parámetro coincide con la de apertura, 
@@ -169,7 +172,7 @@ public class SlotManagerImpl implements SlotManager {
 			} while (openingTimeForDay == null);
 			returnedTime = time.withHour(openingTimeForDay.getHour()).withMinute(openingTimeForDay.getMinute());
 		}
-		logger.info("Time returned as aligned opening time is: {}", returnedTime);
+		logger.info("Aligned time: {}", returnedTime);
 		return returnedTime;
 	}
 	
@@ -179,6 +182,7 @@ public class SlotManagerImpl implements SlotManager {
 	// Helper method for createEmptyCalendar().
 	// Returns a LocalDateTime with the opening time for the next day where classrooms are open.
 	public LocalDateTime moveToNextDayAtOpeningTime(LocalDateTime time, WeeklySchedule schedule) {
+		logger.info("Moving to next open day from time {}", time);
 		DayOfWeek dayOfWeek = time.getDayOfWeek();
 		LocalTime openingTimeForDay = schedule.getWeeklySchedule().get(dayOfWeek).getOpeningTime();
 		do {
@@ -186,12 +190,14 @@ public class SlotManagerImpl implements SlotManager {
 			openingTimeForDay = schedule.getWeeklySchedule().get(time.getDayOfWeek()).getOpeningTime();
 		} while (openingTimeForDay == null);
 		LocalDateTime returnedTime = time.withHour(openingTimeForDay.getHour()).withMinute(openingTimeForDay.getMinute());
-		logger.info("Time returned as next opening time is: {}", returnedTime);
+        logger.info("Next available opening time: {}", returnedTime);
 		return returnedTime;
 	}
 
 	@Override
 	public boolean classroomAvailableDuringPeriod(int idClassroom, LocalDateTime start, LocalDateTime finish) {
+		logger.info("Checking availability for classroom {} from {} to {}", idClassroom, start, finish);
+		  
 		// Primero verificamos que las aulas estén abiertas durante ese período
 		// 
 		// First of all, we have check classrooms are open during the time frame.
@@ -202,6 +208,7 @@ public class SlotManagerImpl implements SlotManager {
 		//
 		// That day is closed.
 		if (openingHours.getOpeningTime() == null || openingHours.getClosingTime() == null) {
+			logger.info("Classroom {} is closed on {}", idClassroom, dayOfWeek);
 			return false;
 		}
 		
@@ -216,13 +223,17 @@ public class SlotManagerImpl implements SlotManager {
 				&& !finishTime.isAfter(openingHours.getClosingTime())) {
 			List<Booking> listBookings = bookingRepository.findActiveBookingsForClassroomByPeriod
 					(idClassroom, start, finish);
+			
 			// Si la lista está vacía es que no hay ninguna reserva que se solape con 
 			// esos horarios especificados, luego el aula está disponible.
 			// 
 			// If the list is empty, it means that no bookings overlap the period of time passed in, 
 			// hence the classroom is available.
-			return listBookings.isEmpty();
+			boolean isAvailable = listBookings.isEmpty();
+            logger.info("Classroom {} availability during period: {}", idClassroom, isAvailable);
+            return isAvailable;
 		}
+		logger.info("Classroom {} is not available during the period {} - {}", idClassroom, start, finish);
 		return false;
 	}
 }
