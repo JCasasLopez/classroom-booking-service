@@ -89,7 +89,7 @@ public class SlotManagerInterfaceMethodsUnitTest {
 			);
 	}
 		
-	private static Stream<Arguments> classroomAvailableDuringPeriodData(){
+	private static Stream<Arguments> isClassroomAvailableDuringPeriodData(){
 		// Opening hours:  "CLOSED", "7:00-20:00", "CLOSED", "CLOSED", "15:30-19:30", 
 		// "10:00-13:30", "CLOSED".
 		// Bookings: Tuesday 12:00 - 14:00 / Friday 16:30 - 18:00.
@@ -144,9 +144,16 @@ public class SlotManagerInterfaceMethodsUnitTest {
 	}
 	
 	@ParameterizedTest
-	@MethodSource("classroomAvailableDuringPeriodData")
-	@DisplayName("classroomAvailableDuringPeriod() returns the expected result")
-	void classroomAvailableDuringPeriod_ShouldReturnExpectedResult(LocalDateTime startTime, 
+	@MethodSource("isClassroomAvailableDuringPeriodData")
+	@DisplayName("isClassroomAvailableDuringPeriod() returns the expected result")
+	// Verificamos también indirectamente el método isWithinOpeningHours(), ya que 
+	// isClassroomAvailableDuringPeriod() le llama primero para comprobar que las aulas
+	// están abiertas durante ese período de tiempo.
+	//
+	// We also indirectly verify the isWithinOpeningHours() method, as 
+	// isClassroomAvailableDuringPeriod() calls it first to check that classrooms 
+	// are open during that time period.
+	void isClassroomAvailableDuringPeriod_ShouldReturnExpectedResult(LocalDateTime startTime, 
 			LocalDateTime finishTime, boolean expectedResult) {
 		// Arrange
 		int idClassroom = 1;
@@ -158,7 +165,7 @@ public class SlotManagerInterfaceMethodsUnitTest {
 		bookingRepository.save(booking2);
 		
 		// Act
-		boolean actualResult = slotManagerImpl.classroomAvailableDuringPeriod(idClassroom, startTime, finishTime);
+		boolean actualResult = slotManagerImpl.isClassroomAvailableDuringPeriod(idClassroom, startTime, finishTime);
 		
 		// Assert
 		assertEquals(expectedResult, actualResult);
