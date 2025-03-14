@@ -53,9 +53,10 @@ public class SearchServiceImpl implements SearchService {
 	// a partir de la cual se obtendrá la lista de aulas disponibles en los métodos de este service.
 	//
 	// Every 24 hours, calls the "classroom" service to get the updated list of classrooms,
-	// which will be used to obtain the list of available classrooms in the methods of this service.	
-	@Scheduled(fixedRate = 86_400_000)
+	// which will be used to obtain the list of available classrooms in the methods of this service.
+	
+	/*@Scheduled(fixedRate = 86_400_000)
 	public void updateClassroomList() {
 		classroomList.updateClassroomList();
-	}
+	}*/
 }
