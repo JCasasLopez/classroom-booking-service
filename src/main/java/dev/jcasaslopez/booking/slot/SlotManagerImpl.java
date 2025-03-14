@@ -193,47 +193,69 @@ public class SlotManagerImpl implements SlotManager {
         logger.info("Next available opening time: {}", returnedTime);
 		return returnedTime;
 	}
+	
+	@Override
+	public boolean isWithinOpeningHours(LocalDateTime start, LocalDateTime finish) {
+		logger.info("Checking classrooms are open from {} to {}", start, finish);
+
+		// Primero verificamos que las aulas estén abiertas durante ese período.
+		//
+		// First of all, we check classrooms are open during the time period.
+		DayOfWeek dayOfWeek = start.getDayOfWeek();
+		OpeningHours openingHours = weeklySchedule.getWeeklySchedule().get(dayOfWeek);
+
+		// Si ese día está cerrado.
+		//
+		// If that day is closed.
+		if (openingHours.getOpeningTime() == null || openingHours.getClosingTime() == null) {
+			logger.info("Classrooms are closed on {}", dayOfWeek);
+			return false;
+		}
+
+		logger.info("Classrooms are open on {}", dayOfWeek);
+		LocalTime startTime = start.toLocalTime();
+		LocalTime finishTime = finish.toLocalTime();
+
+		// Si ese día está abierto, verificamos que el período esté dentro del horario de apertura.
+		//
+		// If that day is open, we check that the time period passed in falls within the opening hours.
+		boolean areClassroomsOpen = !startTime.isBefore(openingHours.getOpeningTime()) && startTime.isBefore(openingHours.getClosingTime())
+				&& finishTime.isAfter(openingHours.getOpeningTime())
+				&& !finishTime.isAfter(openingHours.getClosingTime());
+		
+		if(areClassroomsOpen) {
+			logger.info("Classrooms are open from {} to {}", start, finish);
+		} else {
+			logger.info("Classrooms are closed from {} to {}", start, finish);
+		}
+		return areClassroomsOpen;
+	}
 
 	@Override
 	public boolean classroomAvailableDuringPeriod(int idClassroom, LocalDateTime start, LocalDateTime finish) {
 		logger.info("Checking availability for classroom {} from {} to {}", idClassroom, start, finish);
-		  
-		// Primero verificamos que las aulas estén abiertas durante ese período
-		// 
-		// First of all, we have check classrooms are open during the time frame.
-		DayOfWeek dayOfWeek = start.getDayOfWeek();
-		OpeningHours openingHours = weeklySchedule.getWeeklySchedule().get(dayOfWeek);
 		
-		// Ese día está cerrado.
+		// Verificamos primero que las aulas estén abiertas en este período de tiempo.
 		//
-		// That day is closed.
-		if (openingHours.getOpeningTime() == null || openingHours.getClosingTime() == null) {
-			logger.info("Classroom {} is closed on {}", idClassroom, dayOfWeek);
+		// We check first that classrooms are open during that period of time.
+		if(!isWithinOpeningHours(start, finish)) {
 			return false;
 		}
 		
-		LocalTime startTime = start.toLocalTime();
-		LocalTime finishTime = finish.toLocalTime();
-		
-		// Si ese día está abierto, verificamos que el período esté dentro del horario de apertura.
+		List<Booking> listBookings = bookingRepository.findActiveBookingsForClassroomByPeriod(idClassroom, 
+				start, finish);
+
+		// Si la lista está vacía es que no hay ninguna reserva que se solape con
+		// esos horarios especificados, luego el aula está disponible.
 		//
-		// If that day is open, we check that the time period passed in falls within the opening hours.
-		if (!startTime.isBefore(openingHours.getOpeningTime()) && startTime.isBefore(openingHours.getClosingTime())
-				&& finishTime.isAfter(openingHours.getOpeningTime())
-				&& !finishTime.isAfter(openingHours.getClosingTime())) {
-			List<Booking> listBookings = bookingRepository.findActiveBookingsForClassroomByPeriod
-					(idClassroom, start, finish);
-			
-			// Si la lista está vacía es que no hay ninguna reserva que se solape con 
-			// esos horarios especificados, luego el aula está disponible.
-			// 
-			// If the list is empty, it means that no bookings overlap the period of time passed in, 
-			// hence the classroom is available.
-			boolean isAvailable = listBookings.isEmpty();
-            logger.info("Classroom {} availability during period: {}", idClassroom, isAvailable);
-            return isAvailable;
+		// If the list is empty, it means that no bookings overlap the period of time passed in,
+		// hence the classroom is available.
+		boolean isAvailable = listBookings.isEmpty();
+		if(isAvailable) {
+			logger.info("Classroom {} is available during the period {} - {}", idClassroom, start, finish);
+		} else {
+			logger.info("Classroom {} is not available during the period {} - {}", idClassroom, start, finish);
 		}
-		logger.info("Classroom {} is not available during the period {} - {}", idClassroom, start, finish);
-		return false;
+		return isAvailable;
 	}
 }
