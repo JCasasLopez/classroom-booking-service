@@ -23,10 +23,10 @@ public class ClassroomsList {
 	
 	private String baseUrl = "http://classroom-service/classroom/getClassroomList"; */
 	
-	private List<ClassroomDto> classroomList = new ArrayList<>();
+	private List<ClassroomDto> classroomsList = new ArrayList<>();
 	
 	public ClassroomsList() {
-        this.classroomList = Arrays.asList(
+        this.classroomsList = Arrays.asList(
             new ClassroomDto(1, "Aula Magna", 100, true, true),
             new ClassroomDto(2, "Sala de Conferencias", 50, true, false),
             new ClassroomDto(3, "Laboratorio de Informática", 30, false, true),
@@ -38,10 +38,10 @@ public class ClassroomsList {
     @PostConstruct
     
     public void init() {
-        updateClassroomList();
+        updateClassroomsList();
     }
 
-    public void updateClassroomList() {
+    public void updateClassroomsList() {
         try {
             ClassroomDto[] response = restClient.get()
                 .uri(baseUrl)
@@ -57,8 +57,8 @@ public class ClassroomsList {
     }
     */
 
-	public List<ClassroomDto> getClassroomList() {
-		return classroomList;
+	public List<ClassroomDto> getClassroomsList() {
+		return classroomsList;
 	}
 
 }

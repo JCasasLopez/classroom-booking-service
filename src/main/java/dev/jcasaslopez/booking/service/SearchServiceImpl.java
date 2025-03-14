@@ -3,7 +3,6 @@ package dev.jcasaslopez.booking.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import dev.jcasaslopez.booking.dto.ClassroomDto;
@@ -15,13 +14,13 @@ import dev.jcasaslopez.booking.slot.SlotManager;
 @Service
 public class SearchServiceImpl implements SearchService {
 	
-	private ClassroomsList classroomList;
+	private ClassroomsList classroomsList;
 	private SlotManager slotManager;
 	private BookingRepository bookingRepository;
 
-	public SearchServiceImpl(ClassroomsList classroomList, SlotManager slotManager,
+	public SearchServiceImpl(ClassroomsList classroomsList, SlotManager slotManager,
 			BookingRepository bookingRepository) {
-		this.classroomList = classroomList;
+		this.classroomsList = classroomsList;
 		this.slotManager = slotManager;
 		this.bookingRepository = bookingRepository;
 	}
@@ -34,7 +33,7 @@ public class SearchServiceImpl implements SearchService {
 	@Override
 	public List<ClassroomDto> classroomsAvailableByPeriod(LocalDateTime start, LocalDateTime finish) {
 		List<Integer> listsByIdClassroom = bookingRepository.findOccupiedClassroomsbyPeriod(start, finish);
-		return classroomList.getClassroomList().stream()
+		return classroomsList.getClassroomsList().stream()
 										.filter(c -> !listsByIdClassroom.contains(c.getIdClassroom()))
 										.toList();
 	}
@@ -57,6 +56,6 @@ public class SearchServiceImpl implements SearchService {
 	
 	/*@Scheduled(fixedRate = 86_400_000)
 	public void updateClassroomList() {
-		classroomList.updateClassroomList();
+		classroomsList.updateClassroomsList();
 	}*/
 }
