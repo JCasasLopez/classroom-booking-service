@@ -12,9 +12,15 @@ public interface SlotManager {
 	// Creates an availability calendar for a classroom within a specified time period.
 	List<SlotDto> createCalendar(int idClassroom, LocalDateTime start, LocalDateTime finish);
 	
-	// Verifica que no haya reservas para un aula durante el período de tiempo especificado.
+	// Verifica que las aulas están abiertas para el período de tiempo especificado.
 	//
-	// Checks there are no bookings for a classroom during the specified period of time.
-	boolean classroomAvailableDuringPeriod(int idClassroom, LocalDateTime start, LocalDateTime finish);
+	// Checks that classrooms are open during the specified period of time.
+	boolean isWithinOpeningHours(LocalDateTime start, LocalDateTime finish);
+	
+	// Verifica que las aulas están disponibles para el período de tiempo especificado.
+	//
+	// Checks that classrooms are available during the specified period of time.
+	public boolean classroomAvailableDuringPeriod(int idClassroom, 
+			LocalDateTime start, LocalDateTime finish); 
 	
 }
