@@ -27,10 +27,10 @@ public class ClassroomsList {
 	
 	public ClassroomsList() {
         this.classroomsList = Arrays.asList(
-            new ClassroomDto(1, "Aula Magna", 100, true, true),
-            new ClassroomDto(2, "Sala de Conferencias", 50, true, false),
-            new ClassroomDto(3, "Laboratorio de Informática", 30, false, true),
-            new ClassroomDto(4, "Aula de Matemáticas", 20, false, false)
+            new ClassroomDto(1, "101", 100, true, true),
+            new ClassroomDto(2, "102", 50, true, false),
+            new ClassroomDto(3, "103", 30, false, true),
+            new ClassroomDto(4, "104", 20, false, false)
         );
     }
 
