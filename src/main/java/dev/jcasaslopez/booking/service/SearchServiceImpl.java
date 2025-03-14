@@ -8,18 +8,18 @@ import org.springframework.stereotype.Service;
 
 import dev.jcasaslopez.booking.dto.ClassroomDto;
 import dev.jcasaslopez.booking.dto.SlotDto;
-import dev.jcasaslopez.booking.model.ClassroomList;
+import dev.jcasaslopez.booking.model.ClassroomsList;
 import dev.jcasaslopez.booking.repository.BookingRepository;
 import dev.jcasaslopez.booking.slot.SlotManager;
 
 @Service
 public class SearchServiceImpl implements SearchService {
 	
-	private ClassroomList classroomList;
+	private ClassroomsList classroomList;
 	private SlotManager slotManager;
 	private BookingRepository bookingRepository;
 
-	public SearchServiceImpl(ClassroomList classroomList, SlotManager slotManager,
+	public SearchServiceImpl(ClassroomsList classroomList, SlotManager slotManager,
 			BookingRepository bookingRepository) {
 		this.classroomList = classroomList;
 		this.slotManager = slotManager;
