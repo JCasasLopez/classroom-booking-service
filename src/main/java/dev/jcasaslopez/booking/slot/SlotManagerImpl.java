@@ -232,7 +232,7 @@ public class SlotManagerImpl implements SlotManager {
 	}
 
 	@Override
-	public boolean classroomAvailableDuringPeriod(int idClassroom, LocalDateTime start, LocalDateTime finish) {
+	public boolean isClassroomAvailableDuringPeriod(int idClassroom, LocalDateTime start, LocalDateTime finish) {
 		logger.info("Checking availability for classroom {} from {} to {}", idClassroom, start, finish);
 		
 		// Verificamos primero que las aulas estén abiertas en este período de tiempo.

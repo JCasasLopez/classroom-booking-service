@@ -20,7 +20,7 @@ public interface SlotManager {
 	// Verifica que las aulas están disponibles para el período de tiempo especificado.
 	//
 	// Checks that classrooms are available during the specified period of time.
-	public boolean classroomAvailableDuringPeriod(int idClassroom, 
+	public boolean isClassroomAvailableDuringPeriod(int idClassroom, 
 			LocalDateTime start, LocalDateTime finish); 
 	
 }
