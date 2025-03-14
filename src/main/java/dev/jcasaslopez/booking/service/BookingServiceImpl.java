@@ -49,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
 		
 		logger.info("Checking classroom availability: Classroom ID= {}, Start= {}, Finish= {}", 
 				idClassroom, start, finish);
-		boolean isAvailable = slotManager.classroomAvailableDuringPeriod(idClassroom, start, finish);
+		boolean isAvailable = slotManager.isClassroomAvailableDuringPeriod(idClassroom, start, finish);
 		
 		if(isAvailable) {
 			logger.info("Creating new booking: Classroom ID= {}, User ID= {}, Start= {}, Finish= {}", 
