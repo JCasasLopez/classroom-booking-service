@@ -1,5 +1,7 @@
 package dev.jcasaslopez.booking.dto;
 
+import java.util.Objects;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -77,6 +79,23 @@ public class ClassroomDto {
 
 	public void setSpeakers(Boolean speakers) {
 		this.speakers = speakers;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+	    if (this == o) return true;
+	    if (o == null || getClass() != o.getClass()) return false;
+	    ClassroomDto that = (ClassroomDto) o;
+	    return getIdClassroom() == that.getIdClassroom() &&
+	           getSeats() == that.getSeats() &&
+	           getProjector() == that.getProjector() &&
+	           getSpeakers() == that.getSpeakers() &&
+	           Objects.equals(getName(), that.getName());
+	}
+
+	@Override
+	public int hashCode() {
+	    return Objects.hash(getIdClassroom(), getName(), getSeats(), getProjector(), getSpeakers());
 	}
 	
 }
