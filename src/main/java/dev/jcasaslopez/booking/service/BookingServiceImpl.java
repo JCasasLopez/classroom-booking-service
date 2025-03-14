@@ -92,7 +92,8 @@ public class BookingServiceImpl implements BookingService {
 	// 
 	// Past bookings are set to COMPLETED automatically every 6 hours.
 	@Scheduled(fixedRate = 21_600_00)
-	public void markBookingsAsCompleted(LocalDateTime now) {
+	public void markBookingsAsCompleted() {
+		LocalDateTime now = LocalDateTime.now();
 	    logger.info("Marking all past bookings as COMPLETED from now: {}", now);
 	    bookingRepository.markCompletedBookings(now); 
 	}
