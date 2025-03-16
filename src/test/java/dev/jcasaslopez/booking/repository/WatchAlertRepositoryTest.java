@@ -73,27 +73,30 @@ public class WatchAlertRepositoryTest {
 	}
 	
 	public static Stream<Arguments> findWatchAlertsByTimePeriodAndClassroomData(){
-		// start, finish, idClassroom, number of watch alerts expected.
+		// Argument: start, finish, idClassroom, number of watch alerts expected.
 		return Stream.of(
 				// Edge cases: start and finish coinciden con el inicio y final de alertas 
-				// (por tanto deben incluirse en la lista).
+				// (por lo tanto ambas deben incluirse en la lista).
 				// 
 				// Edge cases: start and finish coincide with beginning and end of alerts (hence
-				// should be included).
+				// both of them should be included in the returned list).
 				Arguments.of(LocalDateTime.of(2025, 3, 17, 8, 0), LocalDateTime.of(2025, 3, 18, 14, 30),
 						101, 3),
+				
 				// Edge cases: start and finish coinciden con el final e inicio de alertas 
-				// (por tanto NO deben incluirse en la lista).
+				// (por tanto ninguna de ellas deben incluirse en la lista).
 				// 
 				// Edge cases: start and finish coincide with end and beginning of alerts (hence
-				// should NOT be included).
+				// neither should be included in the returned list).
 				Arguments.of(LocalDateTime.of(2025, 3, 17, 8, 30), LocalDateTime.of(2025, 3, 18, 14, 0),
 						101, 1),
+				
 				// No hay alertas para este aula.
 				//
 				// No watch alerts for this classroom.
 				Arguments.of(LocalDateTime.of(2025, 3, 21, 18, 0), LocalDateTime.of(2025, 3, 21, 18, 30),
-						106, 0),
+						103, 0),
+				
 				Arguments.of(LocalDateTime.of(2025, 3, 18, 18, 0), LocalDateTime.of(2025, 3, 21, 18, 30),
 						102, 1)
 				);
