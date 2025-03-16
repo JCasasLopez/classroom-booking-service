@@ -9,7 +9,7 @@ import dev.jcasaslopez.booking.entity.WatchAlert;
 public class WatchAlertMapper {
 	
 	public WatchAlertDto watchAlertToWatchAlertDto(WatchAlert watchAlert) {
-		return new WatchAlertDto(watchAlert.getidWatchAlert(),
+		return new WatchAlertDto(watchAlert.getIdWatchAlert(),
 				watchAlert.getIdClassroom(),
 				watchAlert.getIdUser(),
 				watchAlert.getStart(),

@@ -35,7 +35,7 @@ public class WatchAlert {
 		super();
 	}
 
-	public long getidWatchAlert() {
+	public long getIdWatchAlert() {
 		return idWatchAlert;
 	}
 
