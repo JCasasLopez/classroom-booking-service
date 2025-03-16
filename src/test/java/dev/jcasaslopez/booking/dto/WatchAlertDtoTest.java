@@ -41,8 +41,8 @@ public class WatchAlertDtoTest {
     private WatchAlertDto createWatchAlertDto() {
     	LocalDateTime now = LocalDateTime.now();
     	return new WatchAlertDto(0, 10, 10,
-    			now.plusHours(1).withMinute(30),
-    			now.plusHours(2).withMinute(30),
+    			now.plusHours(13).withMinute(0),
+    			now.plusHours(13).withMinute(30),
     			now);
     }
     
@@ -82,7 +82,7 @@ public class WatchAlertDtoTest {
                 () -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Start time must be in the present or future"))),
                 () -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Finish time must be in the future"))),
                 () -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Finish time must be after start time"))),
-                () -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("WatchAlert cannot be shorter than 30 minutes or longer than 2 hours"))),
+                () -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("WatchAlert has to be exactly 30 minutes"))),
                 () -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Starting and finishing times must be valid (on the hour or half past)")))
             );
     }
@@ -100,13 +100,13 @@ public class WatchAlertDtoTest {
 		// Assert
 		assertAll(() -> assertEquals(2, violations.size(), "Expected exactly 2 violations"), 
 			() -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("Finish time must be after start time"))),
-			() -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("WatchAlert cannot be shorter than 30 minutes or longer than 2 hours")))
+			() -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("WatchAlert has to be exactly 30 minutes")))
 				);
 
 	}
     
     @Test
-	@DisplayName("WatchAlertDto longer than 2 hours should fail validation")
+	@DisplayName("WatchAlertDto longer than 30 minutes should fail validation")
     void watchAlertDto_durationExceedsLimit_shouldFailValidation() {
     	// Arrange
     	WatchAlertDto watchAlertDto = createWatchAlertDto();
@@ -117,7 +117,7 @@ public class WatchAlertDtoTest {
     	
 		// Assert
 		assertAll(() -> assertEquals(1, violations.size(), "Expected exactly 1 violation"), 
-			() -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("WatchAlert cannot be shorter than 30 minutes or longer than 2 hours")))
+			() -> assertTrue(violations.stream().anyMatch(v -> v.getMessage().equals("WatchAlert has to be exactly 30 minutes")))
 				);
 
 	}
@@ -128,7 +128,7 @@ public class WatchAlertDtoTest {
     	// Arrange
     	WatchAlertDto watchAlertDto = createWatchAlertDto();
     	watchAlertDto.setStart(watchAlertDto.getStart().withMinute(17));
-    	watchAlertDto.setFinish(watchAlertDto.getFinish().withMinute(17));
+    	watchAlertDto.setFinish(watchAlertDto.getFinish().withMinute(47));
 
     	// Act
     	Set<ConstraintViolation<WatchAlertDto>> violations = validator.validate(watchAlertDto);
@@ -169,7 +169,7 @@ public class WatchAlertDtoTest {
 	void watchAlertDto_Constructor_ShouldSetDefaultValuesIfNull() {
 	    // Arrange
 	    LocalDateTime start = LocalDateTime.now().plusHours(1).withMinute(30);
-	    LocalDateTime finish = LocalDateTime.now().plusHours(2).withMinute(30);
+	    LocalDateTime finish = LocalDateTime.now().plusHours(2).withMinute(0);
 	    
 	    // Act
 	    WatchAlertDto watchAlert = new WatchAlertDto(1, 10, 20, start, finish, null);

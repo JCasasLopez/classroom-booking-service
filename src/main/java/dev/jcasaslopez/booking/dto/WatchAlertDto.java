@@ -28,7 +28,7 @@ public class WatchAlertDto {
 	    return start != null && finish != null && finish.isAfter(start);
 	}
 
-	@AssertTrue(message = "Watchlist cannot be shorter than 30 minutes or longer than 2 hours")
+	@AssertTrue(message = "WatchAlert has to be exactly 30 minutes")
 	public boolean isWithinAllowedDuration() {
 	    if (start == null || finish == null) {
 	    	// Let @NotNull handle validation
@@ -36,7 +36,7 @@ public class WatchAlertDto {
 	    }
 	    Duration duration = Duration.between(start, finish);
 	    long minutes = duration.toMinutes();
-	    return minutes >= 30 && minutes <= 120;
+	    return minutes == 30;
 	}
 
 	@AssertTrue(message = "Starting and finishing times must be valid (on the hour or half past)")
