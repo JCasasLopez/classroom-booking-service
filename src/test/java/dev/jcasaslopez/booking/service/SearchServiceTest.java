@@ -1,6 +1,7 @@
 package dev.jcasaslopez.booking.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -19,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import dev.jcasaslopez.booking.dto.ClassroomDto;
 import dev.jcasaslopez.booking.entity.Booking;
 import dev.jcasaslopez.booking.enums.BookingStatus;
+import dev.jcasaslopez.booking.exception.OutOfOpeningHoursException;
 import dev.jcasaslopez.booking.repository.BookingRepository;
 
 // En los tests usamos Set en lugar de List para asegurarnos de que solo verificamos la presencia
@@ -167,6 +170,17 @@ public class SearchServiceTest {
     	
     	// Assert
     	assertEquals(classroomsSet, availableClassroomsAsSet, "The list does not contain the expected classrooms");
+    }
+    
+    @Test
+    public void classroomsAvailableByPeriod_IfOutOfOpeningHours_ShouldReturnException() {
+    	// Arrange
+    	LocalDateTime saturdayStart = LocalDateTime.of(2025, 3, 22, 11, 0);
+    	LocalDateTime saturdayFinish = LocalDateTime.of(2025, 3, 22, 13, 0);
+
+    	// Act & Assert
+    	assertThrows(OutOfOpeningHoursException.class, () -> searchService.classroomsAvailableByPeriod
+    			(saturdayStart, saturdayFinish), "A OutOfOpeningHoursException should have been thrown, but wasn't");
     }
     
     public static Stream<Arguments> classroomsAvailableByPeriodAndFeaturesData() {
