@@ -3,16 +3,21 @@ package dev.jcasaslopez.booking.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import dev.jcasaslopez.booking.dto.ClassroomDto;
 import dev.jcasaslopez.booking.dto.SlotDto;
+import dev.jcasaslopez.booking.exception.OutOfOpeningHoursException;
 import dev.jcasaslopez.booking.model.ClassroomsList;
 import dev.jcasaslopez.booking.repository.BookingRepository;
 import dev.jcasaslopez.booking.slot.SlotManager;
 
 @Service
 public class SearchServiceImpl implements SearchService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SearchServiceImpl.class);
 	
 	private ClassroomsList classroomsList;
 	private SlotManager slotManager;
@@ -32,11 +37,16 @@ public class SearchServiceImpl implements SearchService {
 
 	@Override
 	public List<ClassroomDto> classroomsAvailableByPeriod(LocalDateTime start, LocalDateTime finish) {
-		slotManager.isWithinOpeningHours(start, finish);
+		if(!slotManager.isWithinOpeningHours(start, finish)){
+			throw new OutOfOpeningHoursException("Classrooms closed from " + start + " to " + finish);
+		}
+		logger.info("Obtaining list of available classrooms from {} to {}", start, finish);
 		List<Integer> listsByIdClassroom = bookingRepository.findOccupiedClassroomsbyPeriod(start, finish);
-		return classroomsList.getClassroomsList().stream()
+		List<ClassroomDto> availableClassrooms =  classroomsList.getClassroomsList().stream()
 										.filter(c -> !listsByIdClassroom.contains(c.getIdClassroom()))
 										.toList();
+		logger.info("Found {} available classrooms from {} to {}", availableClassrooms.size(), start, finish);
+		return availableClassrooms;
 	}
 
 	@Override
