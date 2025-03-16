@@ -32,6 +32,7 @@ public class SearchServiceImpl implements SearchService {
 
 	@Override
 	public List<ClassroomDto> classroomsAvailableByPeriod(LocalDateTime start, LocalDateTime finish) {
+		slotManager.isWithinOpeningHours(start, finish);
 		List<Integer> listsByIdClassroom = bookingRepository.findOccupiedClassroomsbyPeriod(start, finish);
 		return classroomsList.getClassroomsList().stream()
 										.filter(c -> !listsByIdClassroom.contains(c.getIdClassroom()))
