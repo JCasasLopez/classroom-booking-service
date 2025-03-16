@@ -10,8 +10,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,6 +33,7 @@ import dev.jcasaslopez.booking.repository.BookingRepository;
 // without relying on their order, as the method being tested
 // is not expected to return results in a specific sequence.
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SearchServiceTest {
 	
 	@Autowired
@@ -42,7 +44,7 @@ public class SearchServiceTest {
 
     private List<Booking> bookings;
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
     	
         bookings = Arrays.asList(
