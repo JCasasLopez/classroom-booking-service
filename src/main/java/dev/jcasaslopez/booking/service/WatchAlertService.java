@@ -7,7 +7,7 @@ import dev.jcasaslopez.booking.dto.WatchAlertDto;
 
 public interface WatchAlertService {
 	
-	WatchAlertDto addWatchAlert(int idClassroom, int idUser, LocalDateTime start, LocalDateTime finish);
+	WatchAlertDto addWatchAlert(WatchAlertDto watchAlertDto);
 	List<WatchAlertDto> watchAlertsListByUser(int idUser);
 	List<WatchAlertDto> watchAlertsListByTimePeriodAndClassroom(int idClassroom, LocalDateTime start, 
 			LocalDateTime finish);
