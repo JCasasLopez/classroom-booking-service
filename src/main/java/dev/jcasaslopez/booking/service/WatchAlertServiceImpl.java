@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import dev.jcasaslopez.booking.dto.WatchAlertDto;
 import dev.jcasaslopez.booking.entity.WatchAlert;
-import dev.jcasaslopez.booking.exception.ClassroomNotAvailableException;
+import dev.jcasaslopez.booking.exception.NoSuchClassroomException;
 import dev.jcasaslopez.booking.mapper.WatchAlertMapper;
 import dev.jcasaslopez.booking.model.ClassroomsList;
 import dev.jcasaslopez.booking.repository.WatchAlertRepository;
@@ -91,7 +91,7 @@ public class WatchAlertServiceImpl implements WatchAlertService {
 	            .stream()
 	            .noneMatch(c -> c.getIdClassroom() == idClassroom)) {
 	        logger.warn("Classroom with ID= {} not found", idClassroom);
-	        throw new ClassroomNotAvailableException("Classroom with ID= " + idClassroom + " not found");
+	        throw new NoSuchClassroomException("Classroom with ID= " + idClassroom + " not found");
 	    }
 	}
 }

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import dev.jcasaslopez.booking.enums.NotificationType;
-import dev.jcasaslopez.booking.exception.ClassroomNotAvailableException;
+import dev.jcasaslopez.booking.exception.NoSuchClassroomException;
 import dev.jcasaslopez.booking.model.ClassroomsList;
 
 @Service
@@ -67,7 +67,7 @@ public class NotificationServiceImpl implements NotificationService {
 							.findFirst()
 							.orElseThrow(() -> {
 			                    logger.warn("Classroom with ID {} not found", idClassroom);
-			                    return new ClassroomNotAvailableException("Classroom with ID " + idClassroom + " not found");
+			                    return new NoSuchClassroomException("Classroom with ID " + idClassroom + " not found");
 			                });
 	}
 	

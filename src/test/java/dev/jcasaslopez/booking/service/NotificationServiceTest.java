@@ -23,7 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import dev.jcasaslopez.booking.dto.ClassroomDto;
 import dev.jcasaslopez.booking.enums.NotificationType;
-import dev.jcasaslopez.booking.exception.ClassroomNotAvailableException;
+import dev.jcasaslopez.booking.exception.NoSuchClassroomException;
 import dev.jcasaslopez.booking.model.ClassroomsList;
 
 @SpringBootTest
@@ -116,9 +116,9 @@ public class NotificationServiceTest {
 		int idClassroom = 107;
 		
 		// Act & Assert
-		assertThrows(ClassroomNotAvailableException.class,  
+		assertThrows(NoSuchClassroomException.class,  
 				() -> notificationServiceImpl.getClassroomName(idClassroom), 
-				"It should throw a ClassroomNotAvailableException when classroom does not exist");
+				"It should throw a NoSuchClassroomException when classroom does not exist");
 	
 	}
 	
