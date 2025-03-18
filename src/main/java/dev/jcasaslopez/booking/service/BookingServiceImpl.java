@@ -94,9 +94,7 @@ public class BookingServiceImpl implements BookingService {
 	// 
 	// Find the list of watch alerts affected by the cancellation and send the corresponding 
 	// notification to the user who created the watch alert.
-	public void notifyUsersAboutCancellation(Long idBooking){
-		logger.info("Sending watch alert notifications for cancelled booking ID: {}", idBooking);
-		
+	public void notifyUsersAboutCancellation(Long idBooking){		
 		Booking cancelledBooking =  bookingRepository.findById(idBooking)
 		        .orElseThrow(() -> {
 		            logger.warn("Booking not found with ID: {}", idBooking);
@@ -105,6 +103,12 @@ public class BookingServiceImpl implements BookingService {
 		List<WatchAlert> affectedWatchAlerts  = watchAlertRepository.findWatchAlertsByTimePeriodAndClassroom
 				(cancelledBooking.getIdClassroom(), cancelledBooking.getStart(), 
 						cancelledBooking.getFinish());
+		
+		if (affectedWatchAlerts.isEmpty()) {
+		    logger.info("No watch alerts affected for cancelled booking ID: {}", idBooking);
+		} else {
+			logger.info("Sending watch alert notifications for cancelled booking ID: {}", idBooking);
+		}
 		
 		for(WatchAlert w:affectedWatchAlerts) {
 			notificationService.sendNotification(NotificationType.WATCH_ALERT, w.getIdUser(), 
