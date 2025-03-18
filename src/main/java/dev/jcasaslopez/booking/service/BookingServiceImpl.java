@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import dev.jcasaslopez.booking.dto.BookingDto;
 import dev.jcasaslopez.booking.entity.Booking;
 import dev.jcasaslopez.booking.enums.BookingStatus;
+import dev.jcasaslopez.booking.enums.NotificationType;
 import dev.jcasaslopez.booking.exception.ClassroomNotAvailableException;
 import dev.jcasaslopez.booking.exception.NoSuchBookingException;
 import dev.jcasaslopez.booking.mapper.BookingMapper;
@@ -29,15 +30,18 @@ import dev.jcasaslopez.booking.slot.SlotManager;
 public class BookingServiceImpl implements BookingService {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BookingServiceImpl.class);
+	
 	private BookingRepository bookingRepository;
 	private BookingMapper bookingMapper; 
 	private SlotManager slotManager;
+	private NotificationService notificationService;
 	
-	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper,
-			SlotManager slotManager) {
+	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper, SlotManager slotManager,
+			NotificationService notificationService) {
 		this.bookingRepository = bookingRepository;
 		this.bookingMapper = bookingMapper;
 		this.slotManager = slotManager;
+		this.notificationService = notificationService;
 	}
 
 	@Override
@@ -57,6 +61,11 @@ public class BookingServiceImpl implements BookingService {
 			Booking returnedBooking = bookingRepository.save(bookingMapper.bookingDtoToBooking(bookingDto));
 			logger.info("Booking created: Classroom ID= {}, User ID= {}, Start= {}, Finish= {}", returnedBooking.getIdClassroom(),
 					returnedBooking.getIdUser(), returnedBooking.getStart(), returnedBooking.getFinish());
+			
+			logger.info("Sending booking confirmation notification to User ID= {}", bookingDto.getIdUser());
+			notificationService.sendNotification(NotificationType.BOOK, bookingDto.getIdUser(), 
+					idClassroom, start, finish);
+			
 			return bookingMapper.bookingToBookingDto(returnedBooking);
 		}
 		throw new ClassroomNotAvailableException("Classroom " + idClassroom + 
@@ -74,6 +83,10 @@ public class BookingServiceImpl implements BookingService {
 	        });
 	    bookingRepository.cancelBooking(idBooking, bookingStatus);
 	    logger.info("Booking cancelled successfully with ID: {}", idBooking);
+	    
+	    logger.info("Sending watch alert notification to User ID= {}", bookingDto.getIdUser());
+		notificationService.sendNotification(NotificationType.WATCH_ALERT, bookingDto.getIdUser(), 
+				idClassroom, start, finish);
 	}
 
 	@Override
