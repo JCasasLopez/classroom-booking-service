@@ -45,13 +45,14 @@ public class NotificationServiceImpl implements NotificationService {
             case BOOK:
             	message.put("Subject", "Booking confirmed");
             	message.put("Message", String.format(
-                        "We are pleased to confirm your booking for %s %s.",
+                        "We are pleased to confirm your booking for classroom %s %s.",
                         classroomName, dateTimeString));
                 break;
             case WATCH_ALERT:
             	message.put("Subject", "A spot you were watching has opened up!");
             	message.put("Message", String.format(
-                        "A booking for %s %s has been cancelled. Hurry up and book it before someone else does!",
+                        "A booking for classroom %s %s has been cancelled. "
+                        + "Hurry up and book it before someone else does!",
                         classroomName, dateTimeString));
                 break;
         }
@@ -84,9 +85,8 @@ public class NotificationServiceImpl implements NotificationService {
 	public void sendNotification(NotificationType notificationType, int idUser, int idClassroom,
 			LocalDateTime start, LocalDateTime finish) {
         String url = usersServiceUrl + "/notifications/send";
-		String baseUrl = "http://localhost:9000/service-user/user/notifications/send";
 		Map<String, String> message = new HashMap<>();
-		logger.info("Sending notification to user {} at URL: {}", idUser, baseUrl);
+		logger.info("Sending notification to user {} at URL: {}", idUser, url);
 		message = messageBuilder(notificationType, idUser, idClassroom, start, finish);
 		
 		try {
