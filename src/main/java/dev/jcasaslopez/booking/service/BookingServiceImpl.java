@@ -11,21 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import dev.jcasaslopez.booking.dto.BookingDto;
 import dev.jcasaslopez.booking.entity.Booking;
+import dev.jcasaslopez.booking.entity.WatchAlert;
 import dev.jcasaslopez.booking.enums.BookingStatus;
 import dev.jcasaslopez.booking.enums.NotificationType;
 import dev.jcasaslopez.booking.exception.ClassroomNotAvailableException;
 import dev.jcasaslopez.booking.exception.NoSuchBookingException;
 import dev.jcasaslopez.booking.mapper.BookingMapper;
 import dev.jcasaslopez.booking.repository.BookingRepository;
+import dev.jcasaslopez.booking.repository.WatchAlertRepository;
 import dev.jcasaslopez.booking.slot.SlotManager;
 
-// Esta clase no contiene lógica de negocio, solo delega llamadas a repositorios y mapeadores. 
-// Por esta razón, no se realizarán tests unitarios sobre ella. 
-// El comportamiento se validará a nivel de integración. 
-// 
-// This class does not contain business logic; it only delegates calls to repositories and mappers. 
-// For this reason, unit tests will not be written for it. 
-// The behavior will be validated through integration tests.
 @Service
 public class BookingServiceImpl implements BookingService {
 	
@@ -35,13 +30,15 @@ public class BookingServiceImpl implements BookingService {
 	private BookingMapper bookingMapper; 
 	private SlotManager slotManager;
 	private NotificationService notificationService;
+	private WatchAlertRepository watchAlertRepository;
 	
 	public BookingServiceImpl(BookingRepository bookingRepository, BookingMapper bookingMapper, SlotManager slotManager,
-			NotificationService notificationService) {
+			NotificationService notificationService, WatchAlertRepository watchAlertRepository) {
 		this.bookingRepository = bookingRepository;
 		this.bookingMapper = bookingMapper;
 		this.slotManager = slotManager;
 		this.notificationService = notificationService;
+		this.watchAlertRepository = watchAlertRepository;
 	}
 
 	@Override
@@ -84,9 +81,35 @@ public class BookingServiceImpl implements BookingService {
 	    bookingRepository.cancelBooking(idBooking, bookingStatus);
 	    logger.info("Booking cancelled successfully with ID: {}", idBooking);
 	    
-	    logger.info("Sending watch alert notification to User ID= {}", bookingDto.getIdUser());
-		notificationService.sendNotification(NotificationType.WATCH_ALERT, bookingDto.getIdUser(), 
-				idClassroom, start, finish);
+	    // Este método delega el envío de la notificación correspondiente porque, a diferencia de 
+	    //  book(), dicho envío incluye lógica de negocio.
+	    // 
+	    // This method delegates the sending of the corresponding notification because, unlike in 
+	    // book(), it involves business logic.
+	    notifyUsersAboutCancellation(idBooking);
+	}
+	
+	// Encuentra la lista de watch alerts que se ven afectados por la cancelación, y manda la
+	// correspondiente notificación al usuario que creó el watch alert.
+	// 
+	// Find the list of watch alerts affected by the cancellation and send the corresponding 
+	// notification to the user who created the watch alert.
+	public void notifyUsersAboutCancellation(Long idBooking){
+		logger.info("Sending watch alert notifications for cancelled booking ID: {}", idBooking);
+		
+		Booking cancelledBooking =  bookingRepository.findById(idBooking)
+		        .orElseThrow(() -> {
+		            logger.warn("Booking not found with ID: {}", idBooking);
+		            return new NoSuchBookingException("No such booking or incorrect idBooking");
+		        });
+		List<WatchAlert> watchAlerts = watchAlertRepository.findWatchAlertsByTimePeriodAndClassroom
+				(cancelledBooking.getIdClassroom(), cancelledBooking.getStart(), 
+						cancelledBooking.getFinish());
+		
+		for(WatchAlert w:watchAlerts) {
+			notificationService.sendNotification(NotificationType.WATCH_ALERT, w.getIdUser(), 
+					w.getIdClassroom(), w.getStart(), w.getFinish());
+		}	
 	}
 
 	@Override
