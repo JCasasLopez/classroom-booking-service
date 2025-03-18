@@ -82,7 +82,7 @@ public class BookingServiceImpl implements BookingService {
 	    logger.info("Booking cancelled successfully with ID: {}", idBooking);
 	    
 	    // Este método delega el envío de la notificación correspondiente porque, a diferencia de 
-	    //  book(), dicho envío incluye lógica de negocio.
+	    // book(), dicho envío incluye lógica de negocio.
 	    // 
 	    // This method delegates the sending of the corresponding notification because, unlike in 
 	    // book(), it involves business logic.
@@ -102,11 +102,11 @@ public class BookingServiceImpl implements BookingService {
 		            logger.warn("Booking not found with ID: {}", idBooking);
 		            return new NoSuchBookingException("No such booking or incorrect idBooking");
 		        });
-		List<WatchAlert> watchAlerts = watchAlertRepository.findWatchAlertsByTimePeriodAndClassroom
+		List<WatchAlert> affectedWatchAlerts  = watchAlertRepository.findWatchAlertsByTimePeriodAndClassroom
 				(cancelledBooking.getIdClassroom(), cancelledBooking.getStart(), 
 						cancelledBooking.getFinish());
 		
-		for(WatchAlert w:watchAlerts) {
+		for(WatchAlert w:affectedWatchAlerts) {
 			notificationService.sendNotification(NotificationType.WATCH_ALERT, w.getIdUser(), 
 					w.getIdClassroom(), w.getStart(), w.getFinish());
 		}	
