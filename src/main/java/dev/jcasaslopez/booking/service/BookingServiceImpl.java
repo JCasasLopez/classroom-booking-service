@@ -51,8 +51,6 @@ public class BookingServiceImpl implements BookingService {
 		boolean isAvailable = slotManager.isClassroomAvailableDuringPeriod(idClassroom, start, finish);
 		
 		if(isAvailable) {
-			logger.info("Creating new booking: Classroom ID= {}, User ID= {}, Start= {}, Finish= {}", 
-					idClassroom, bookingDto.getIdUser(), start, finish);
 			Booking returnedBooking = bookingRepository.save(bookingMapper.bookingDtoToBooking(bookingDto));
 			logger.info("Booking created: Classroom ID= {}, User ID= {}, Start= {}, Finish= {}", returnedBooking.getIdClassroom(),
 					returnedBooking.getIdUser(), returnedBooking.getStart(), returnedBooking.getFinish());

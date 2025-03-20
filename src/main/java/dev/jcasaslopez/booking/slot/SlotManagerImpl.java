@@ -196,8 +196,6 @@ public class SlotManagerImpl implements SlotManager {
 	
 	@Override
 	public boolean isWithinOpeningHours(LocalDateTime start, LocalDateTime finish) {
-		logger.info("Checking classrooms are open from {} to {}", start, finish);
-
 		// Primero verificamos que las aulas estén abiertas durante ese período.
 		//
 		// First of all, we check classrooms are open during the time period.
@@ -208,7 +206,7 @@ public class SlotManagerImpl implements SlotManager {
 		//
 		// If that day is closed.
 		if (openingHours.getOpeningTime() == null || openingHours.getClosingTime() == null) {
-			logger.info("Classrooms are closed on {}", dayOfWeek);
+			logger.warn("Classrooms are closed on {}", dayOfWeek);
 			return false;
 		}
 
@@ -226,7 +224,7 @@ public class SlotManagerImpl implements SlotManager {
 		if(areClassroomsOpen) {
 			logger.info("Classrooms are open from {} to {}", start, finish);
 		} else {
-			logger.info("Classrooms are closed from {} to {}", start, finish);
+			logger.warn("Classrooms are closed from {} to {}", start, finish);
 		}
 		return areClassroomsOpen;
 	}
@@ -252,9 +250,9 @@ public class SlotManagerImpl implements SlotManager {
 		// hence the classroom is available.
 		boolean isAvailable = listBookings.isEmpty();
 		if(isAvailable) {
-			logger.info("Classroom {} is available during the period {} - {}", idClassroom, start, finish);
+			logger.info("Classroom {} is available");
 		} else {
-			logger.info("Classroom {} is not available during the period {} - {}", idClassroom, start, finish);
+			logger.warn("Classroom {} is not available");
 		}
 		return isAvailable;
 	}
