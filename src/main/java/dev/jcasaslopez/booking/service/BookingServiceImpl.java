@@ -47,9 +47,7 @@ public class BookingServiceImpl implements BookingService {
 		int idClassroom = bookingDto.getIdClassroom();
 		LocalDateTime start = bookingDto.getStart();
 		LocalDateTime finish = bookingDto.getFinish();
-		
-		logger.info("Checking classroom availability: Classroom ID= {}, Start= {}, Finish= {}", 
-				idClassroom, start, finish);
+	
 		boolean isAvailable = slotManager.isClassroomAvailableDuringPeriod(idClassroom, start, finish);
 		
 		if(isAvailable) {
