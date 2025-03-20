@@ -20,6 +20,10 @@ public class WatchAlertController {
 	
 	private WatchAlertService watchAlertService;
 	
+	public WatchAlertController(WatchAlertService watchAlertService) {
+		this.watchAlertService = watchAlertService;
+	}
+
 	@PostMapping(value="alerts/createAlert", consumes=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<StandardResponse> createAlert(@Valid @RequestBody WatchAlertDto watchAlertDto){
 		watchAlertService.addWatchAlert(watchAlertDto);
