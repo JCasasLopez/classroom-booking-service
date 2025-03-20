@@ -26,7 +26,7 @@ public class BookingController {
 		this.bookingService = bookingService;
 	}
 
-	@PostMapping(value="bookings/book", consumes=MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value="/bookings/book", consumes=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<StandardResponse> book(@Valid @RequestBody BookingDto bookingDto){
 		bookingService.book(bookingDto);
 		StandardResponse response = new StandardResponse (LocalDateTime.now(), 
@@ -34,7 +34,7 @@ public class BookingController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
-	@PutMapping(value="bookings/cancelBooking")
+	@PutMapping(value="/bookings/cancelBooking")
 	public ResponseEntity<StandardResponse> cancelBooking(Long idBooking){
 		bookingService.cancel(idBooking, BookingStatus.CANCELLED);
 		StandardResponse response = new StandardResponse (LocalDateTime.now(), 
@@ -42,7 +42,7 @@ public class BookingController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
-	@GetMapping(value="bookings/bookingsByUser")
+	@GetMapping(value="/bookings/bookingsByUser")
 	public ResponseEntity<StandardResponse> bookingsByUser(int idUser){
 		bookingService.bookingsByUser(idUser);
 		StandardResponse response = new StandardResponse (LocalDateTime.now(), 
